@@ -169,18 +169,22 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                                 
                                 // Try to identify non-English words
                                 try {
-                                    // Force API to only output foreign words in strict comma format
+                                    // Force API to only output foreign/proper names in strict format
                                     const analysis = await promptAPI.prompt(
-                                        `Analyze this text and identify ONLY non-English words. Output ONLY the words in this EXACT format - example: "word1","word2","word3" (no spaces after commas): "${chunkText}"`
+                                        `Analyze this text and identify ONLY foreign words and proper names (NOT regular English words or phrases). Output ONLY the identified words in this EXACT format - example: "word1","word2" (no spaces after commas): "${chunkText}"`
                                     );
                                     
                                     // Parse the strictly formatted response
                                     const nonEnglishWords = analysis.split(',')
                                         .map(word => word.replace(/"/g, '').trim()) // Remove quotes and trim
-                                        .filter(word => word && word.length > 1);
-                                    console.log('Identified non-English words:', nonEnglishWords);
+                                        .filter(word => {
+                                            // Filter out common English words and short terms
+                                            const isCommonEnglish = /^(interview|note|notes|brain|storm|brainstorm|brainstorming|medium|reader|readers|the|and|or|in|on|at|to|a|an|by)$/i.test(word);
+                                            return word && word.length > 1 && !isCommonEnglish;
+                                        });
+                                    console.log('Identified foreign/proper names:', nonEnglishWords);
                                     
-                                    // Replace non-English words with quoted placeholders
+                                    // Replace identified words with quoted placeholders
                                     let modifiedText = chunkText;
                                     const replacements = new Map();
                                     
@@ -192,8 +196,14 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                                             // Escape special characters in word for RegExp
                                             const escapedWord = word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
                                             modifiedText = modifiedText.replace(new RegExp(escapedWord, 'g'), placeholder);
+                                            
+                                            // Debug log for each replacement
+                                            console.log(`Word replacement: "${word}" -> ${placeholder}`);
                                         }
                                     });
+                                    
+                                    // Debug log final replacements map
+                                    console.log('Replacements map:', Object.fromEntries(replacements));
                                     
                                     // Try simplification with replaced text, using a more specific prompt
                                     try {
@@ -217,10 +227,15 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                                             }
                                         }
                                         
-                                        // Restore original names
+                                        // Restore original names with debugging
+                                        console.log('Simplified text before restoration:', simplifiedText);
                                         replacements.forEach((original, placeholder) => {
-                                            simplifiedText = simplifiedText.replace(new RegExp(placeholder, 'g'), original);
+                                            const regex = new RegExp(placeholder.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g');
+                                            const matches = simplifiedText.match(regex);
+                                            console.log(`Restoring: ${placeholder} -> "${original}" (matches: ${matches ? matches.length : 0})`);
+                                            simplifiedText = simplifiedText.replace(regex, original);
                                         });
+                                        console.log('Final simplified text:', simplifiedText);
                                         
                                     } catch (error) {
                                         console.error('Failed to simplify even with replacements:', error);
