@@ -85,64 +85,104 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                     id: mainContent.id
                 });
 
-                // Get paragraphs within main content, excluding metadata sections
-                const paragraphs = Array.from(mainContent.getElementsByTagName('p'))
-                    .filter(p => {
+                // Helper function to check if element is a header
+                const isHeader = (element) => {
+                    return element.tagName.match(/^H[1-6]$/i);
+                };
+
+                // Helper function to estimate token count (rough approximation)
+                const estimateTokens = (text) => {
+                    return text.split(/\s+/).length * 1.3; // Multiply by 1.3 as a safety factor
+                };
+
+                // Get all content elements (paragraphs and headers)
+                const contentElements = Array.from(mainContent.querySelectorAll('p, h1, h2, h3, h4, h5, h6'))
+                    .filter(el => {
+                        if (isHeader(el)) return true;
+                        
                         // Skip paragraphs that are likely metadata
                         const isMetadata = 
-                            // Check if parent or grandparent has classes indicating metadata
-                            p.closest('.author, .meta, .claps, .likes, .stats, .profile, .bio, header, footer') ||
-                            // Check if paragraph contains very short text (likely metadata)
-                            p.textContent.trim().length < 50 ||
-                            // Check if paragraph starts with common metadata patterns
-                            /^(By|Published|Updated|Written by|(\d+) min read|(\d+) claps)/i.test(p.textContent.trim());
+                            el.closest('.author, .meta, .claps, .likes, .stats, .profile, .bio, header, footer') ||
+                            el.textContent.trim().length < 50 ||
+                            /^(By|Published|Updated|Written by|(\d+) min read|(\d+) claps)/i.test(el.textContent.trim());
                         
                         return !isMetadata;
                     });
 
-                console.log(`Found ${paragraphs.length} paragraphs to simplify in main content`);
-                    for (let p of paragraphs) {
-                        const originalText = p.textContent;
-                        // Use Prompt API to simplify the text
-                        console.log('Attempting to simplify text:', originalText.substring(0, 50) + '...');
-                        console.log('Processing paragraph:', {
-                            length: originalText.length,
-                            preview: originalText.substring(0, 100) + '...'
-                        });
+                console.log(`Found ${contentElements.length} content elements to process`);
 
-                        try {
-                            const simplifiedText = await promptAPI.prompt(
-                                `Rewrite this text to make it easier to understand for those with ADHD, use simple language, and short sentences, no need to elaborate and explain further. DO NOT use bullet points: "${originalText}"`
-                            );
-                            
-                            console.log('API Response:', {
-                                original: {
-                                    length: originalText.length,
-                                    preview: originalText.substring(0, 100)
-                                },
-                                simplified: {
-                                    length: simplifiedText.length,
-                                    preview: simplifiedText.substring(0, 100)
-                                }
-                            });
+                // Group elements into chunks
+                const chunks = [];
+                let currentChunk = [];
+                let currentTokenCount = 0;
+                const MAX_TOKENS = 800; // Leave room for prompt text and response
 
-                            if (!simplifiedText || simplifiedText.trim().length === 0) {
-                                console.warn('Empty response from API - keeping original text');
-                                continue;
-                            }
+                for (let i = 0; i < contentElements.length; i++) {
+                    const element = contentElements[i];
+                    
+                    // If we hit a header or the chunk is getting too big, start a new chunk
+                    if (isHeader(element) || 
+                        (currentChunk.length > 0 && 
+                         (currentTokenCount + estimateTokens(element.textContent) > MAX_TOKENS))) {
                         
-                            // Create new paragraph with simplified text
-                            const newP = document.createElement('p');
-                            newP.textContent = simplifiedText;
-                            newP.style.backgroundColor = '#f0f8ff';
-                            newP.style.padding = '10px';
-                            newP.style.borderLeft = '3px solid #3498db';
-                            newP.style.margin = '10px 0';
+                        if (currentChunk.length > 0) {
+                            chunks.push(currentChunk);
+                        }
+                        currentChunk = [element];
+                        currentTokenCount = estimateTokens(element.textContent);
+                    } else {
+                        currentChunk.push(element);
+                        currentTokenCount += estimateTokens(element.textContent);
+                    }
+                }
+                
+                // Add the last chunk if it exists
+                if (currentChunk.length > 0) {
+                    chunks.push(currentChunk);
+                }
+
+                console.log(`Grouped content into ${chunks.length} chunks`);
+
+                // Process each chunk
+                for (let chunk of chunks) {
+                    // Skip chunks that only contain headers
+                    if (chunk.length === 1 && isHeader(chunk[0])) continue;
+
+                    // Combine paragraph texts in the chunk
+                    const chunkText = chunk
+                        .filter(el => !isHeader(el))
+                        .map(el => el.textContent)
+                        .join('\n\n');
+
+                    try {
+                        console.log('Attempting to simplify chunk:', chunkText.substring(0, 50) + '...');
+                        
+                        const simplifiedText = await promptAPI.prompt(
+                            `Rewrite this text to make it easier to understand for those with ADHD. Use simple language and short sentences. Preserve paragraph breaks. Keep the same basic structure but make it clearer: "${chunkText}"`
+                        );
                             
-                            // Add original text as hidden attribute for reference
-                            newP.setAttribute('data-original-text', originalText);
-                            
-                            p.parentNode.replaceChild(newP, p);
+                        if (!simplifiedText || simplifiedText.trim().length === 0) {
+                            console.warn('Empty response from API - keeping original text');
+                            continue;
+                        }
+
+                        // Split simplified text back into paragraphs
+                        const simplifiedParagraphs = simplifiedText.split('\n\n');
+                        const originalParagraphs = chunk.filter(el => !isHeader(el));
+
+                        // Replace each original paragraph with its simplified version
+                        originalParagraphs.forEach((p, index) => {
+                            if (index < simplifiedParagraphs.length) {
+                                const newP = document.createElement('p');
+                                newP.textContent = simplifiedParagraphs[index];
+                                newP.style.backgroundColor = '#f0f8ff';
+                                newP.style.padding = '10px';
+                                newP.style.borderLeft = '3px solid #3498db';
+                                newP.style.margin = '10px 0';
+                                newP.setAttribute('data-original-text', p.textContent);
+                                p.parentNode.replaceChild(newP, p);
+                            }
+                        });
                             console.log('Successfully replaced paragraph with simplified version');
                         } catch (error) {
                             console.error('Error simplifying paragraph:', error, {
