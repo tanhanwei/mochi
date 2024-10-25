@@ -169,26 +169,29 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                                 
                                 // Try to identify non-English words
                                 try {
-                                    // First try to extract just proper names and special terms
+                                    // Force API to only output foreign words in strict comma format
                                     const analysis = await promptAPI.prompt(
-                                        `Identify ONLY proper names and special terms from this text. Return them as a comma-separated list, no explanations: "${chunkText}"`
+                                        `Analyze this text and identify ONLY non-English words. Output ONLY the words in this EXACT format - example: "word1","word2","word3" (no spaces after commas): "${chunkText}"`
                                     );
-                                
-                                    // Filter out empty or invalid entries
+                                    
+                                    // Parse the strictly formatted response
                                     const nonEnglishWords = analysis.split(',')
-                                        .map(word => word.trim())
+                                        .map(word => word.replace(/"/g, '').trim()) // Remove quotes and trim
                                         .filter(word => word && word.length > 1);
                                     console.log('Identified non-English words:', nonEnglishWords);
                                     
-                                    // Replace non-English words with placeholders
+                                    // Replace non-English words with quoted placeholders
                                     let modifiedText = chunkText;
                                     const replacements = new Map();
                                     
                                     nonEnglishWords.forEach((word, index) => {
                                         if (word && modifiedText.includes(word)) {
-                                            const placeholder = `[NAME${index + 1}]`;
+                                            // Use quoted single letters as placeholders
+                                            const placeholder = `"${String.fromCharCode(65 + index)}"`; // "A", "B", "C", etc.
                                             replacements.set(placeholder, word);
-                                            modifiedText = modifiedText.replace(new RegExp(word, 'g'), placeholder);
+                                            // Escape special characters in word for RegExp
+                                            const escapedWord = word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                                            modifiedText = modifiedText.replace(new RegExp(escapedWord, 'g'), placeholder);
                                         }
                                     });
                                     
