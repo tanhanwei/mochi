@@ -3,25 +3,40 @@ let rewriter = null;
 
 // Initialize the AI capabilities
 async function initAICapabilities() {
+  console.log('Starting AI capabilities initialization...');
   try {
+    // Check if AI API is available
+    if (typeof ai === 'undefined') {
+      console.error('AI API is not defined');
+      return { summarizer: null, rewriter: null };
+    }
+
     // Initialize summarizer
-    if (typeof ai !== 'undefined' && ai.summarizer) {
+    if (ai.summarizer) {
+      console.log('Creating summarizer...');
       summarizer = await ai.summarizer.create();
+      console.log('Waiting for summarizer to be ready...');
       await summarizer.ready;
       console.log('Summarizer initialized successfully');
     } else {
-      console.warn('Summarizer API not available');
+      console.warn('Summarizer API not available in ai object:', ai);
     }
     
     // Initialize rewriter
-    if (typeof ai !== 'undefined' && ai.rewriter) {
+    if (ai.rewriter) {
+      console.log('Creating rewriter...');
       rewriter = await ai.rewriter.create();
+      console.log('Waiting for rewriter to be ready...');
       await rewriter.ready;
       console.log('Rewriter initialized successfully');
     } else {
-      console.warn('Rewriter API not available');
+      console.warn('Rewriter API not available in ai object:', ai);
     }
 
+    console.log('AI capabilities initialization complete:', {
+      summarizerAvailable: !!summarizer,
+      rewriterAvailable: !!rewriter
+    });
     return { summarizer, rewriter };
   } catch (error) {
     console.error('Error initializing AI capabilities:', error);
@@ -33,15 +48,18 @@ async function initAICapabilities() {
 chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
     switch (request.action) {
         case "simplify":
-            console.log("Simplifying page content...");
+            console.log("Simplify action received");
             try {
                 if (!rewriter) {
+                    console.log('Rewriter not initialized, attempting to initialize AI capabilities...');
                     const capabilities = await initAICapabilities();
                     if (!capabilities.rewriter) {
-                        console.error('Rewriter not available - cannot simplify text');
+                        console.error('Failed to initialize rewriter - cannot simplify text');
                         return;
                     }
                 }
+                
+                console.log('Finding main content element...');
                 
                 console.log('Rewriter status:', rewriter ? 'initialized' : 'not initialized');
                 
@@ -209,4 +227,12 @@ function adjustLayout() {
 }
 
 // Initialize AI capabilities when content script loads
-initAICapabilities();
+console.log('Content script loaded');
+initAICapabilities().then(() => {
+    console.log('Content script setup complete with capabilities:', {
+        summarizerAvailable: !!summarizer,
+        rewriterAvailable: !!rewriter
+    });
+}).catch(error => {
+    console.error('Failed to initialize AI capabilities:', error);
+});
