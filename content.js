@@ -22,28 +22,28 @@ async function initAICapabilities() {
       console.warn('Summarizer API not available in ai object:', ai);
     }
     
-    // Initialize prompter
-    if (ai.prompt) {
+    // Initialize rewriter as prompter
+    if (ai.rewriter) {
       try {
-        console.log('Creating prompter...');
-        prompter = await ai.prompt.create();
+        console.log('Creating rewriter...');
+        prompter = await ai.rewriter.create();
         if (!prompter) {
-          throw new Error('Prompter creation failed - returned null');
+          throw new Error('Rewriter creation failed - returned null');
         }
-        console.log('Waiting for prompter to be ready...');
+        console.log('Waiting for rewriter to be ready...');
         await Promise.race([
           prompter.ready,
           new Promise((_, reject) => 
-            setTimeout(() => reject(new Error('Prompter ready timeout')), 10000)
+            setTimeout(() => reject(new Error('Rewriter ready timeout')), 10000)
           )
         ]);
-        console.log('Prompter initialized successfully');
+        console.log('Rewriter initialized successfully');
       } catch (error) {
-        console.error('Failed to initialize prompter:', error);
+        console.error('Failed to initialize rewriter:', error);
         prompter = null;
       }
     } else {
-      console.warn('Prompt API not available in ai object:', ai);
+      console.warn('Rewriter API not available in ai object:', ai);
     }
 
     console.log('AI capabilities initialization complete:', {
@@ -82,11 +82,7 @@ chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
                         const originalText = p.textContent;
                         // Use AI prompt to simplify the text
                         console.log('Attempting to simplify text:', originalText.substring(0, 50) + '...');
-                        const prompt = `Please simplify this text to make it easier to understand, while preserving the key meaning: "${originalText}"`;
-                        const simplifiedText = await prompter.complete(prompt, {
-                            temperature: 0.7,
-                            max_tokens: 200
-                        });
+                        const simplifiedText = await prompter.simplify(originalText);
                         console.log('Simplified text:', simplifiedText.substring(0, 50) + '...');
                         
                         // Create new paragraph with simplified text
