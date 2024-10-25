@@ -53,12 +53,14 @@ async function initAICapabilities() {
 }
 
 // Listen for messages from popup
-chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
-    switch (request.action) {
-        case "simplify":
-            console.log("Simplify action received");
-            try {
-                await ensureInitialized();
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    // Handle message asynchronously but keep connection open
+    (async () => {
+        console.log("Received action:", request.action);
+        switch (request.action) {
+            case "simplify":
+                try {
+                    await ensureInitialized();
                 if (!promptAPI) {
                     console.error('Prompt API not available - cannot simplify text');
                     return;
@@ -156,13 +158,12 @@ chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
                     notification.style.zIndex = '10000';
                     document.body.appendChild(notification);
                     setTimeout(() => notification.remove(), 3000);
+                } catch (error) {
+                    console.error('Error simplifying content:', error);
                 }
-            } catch (error) {
-                console.error('Error simplifying content:', error);
-            }
-            break;
-            
-        case "summarize":
+                break;
+                
+            case "summarize":
             try {
                 await ensureInitialized();
                 if (!summarizer) {
@@ -219,14 +220,16 @@ chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
             } catch (error) {
                 console.error("Error summarizing content:", error);
             }
-            break;
-            
-        case "adjustLayout":
-            console.log("Adjusting page layout...");
-            adjustLayout();
-            break;
-    }
-    return true;
+                break;
+                
+            case "adjustLayout":
+                console.log("Adjusting page layout...");
+                adjustLayout();
+                break;
+        }
+        sendResponse({success: true});
+    })();
+    return true; // Keep the message channel open for async response
 });
 
 function adjustLayout() {
