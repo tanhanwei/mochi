@@ -169,19 +169,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                                 
                                 // Try to identify non-English words
                                 try {
-                                    // Force API to only output foreign/proper names in strict format
-                                    const analysis = await promptAPI.prompt(
-                                        `Analyze this text and identify ONLY foreign words and proper names (NOT regular English words or phrases). Output ONLY the identified words in this EXACT format - example: "word1","word2" (no spaces after commas): "${chunkText}"`
-                                    );
-                                    
-                                    // Parse the strictly formatted response
-                                    const nonEnglishWords = analysis.split(',')
-                                        .map(word => word.replace(/"/g, '').trim()) // Remove quotes and trim
-                                        .filter(word => {
-                                            // Filter out common English words and short terms
-                                            const isCommonEnglish = /^(interview|note|notes|brain|storm|brainstorm|brainstorming|medium|reader|readers|the|and|or|in|on|at|to|a|an|by)$/i.test(word);
-                                            return word && word.length > 1 && !isCommonEnglish;
-                                        });
+                                    // Use dictionary-based analysis instead of API
+                                    const { nonEnglishWords, properNames } = analyzeText(chunkText);
+                                    const wordsToReplace = [...new Set([...nonEnglishWords, ...properNames])];
                                     console.log('Identified foreign/proper names:', nonEnglishWords);
                                     
                                     // Replace identified words with quoted placeholders
