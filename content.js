@@ -85,13 +85,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                     id: mainContent.id
                 });
 
-                // Only get paragraphs that are direct children or within one level of nesting
-                const paragraphs = Array.from(mainContent.getElementsByTagName('p'))
-                    .filter(p => {
-                        const isDirectChild = p.parentElement === mainContent;
-                        const isOneNested = p.parentElement.parentElement === mainContent;
-                        return isDirectChild || isOneNested;
-                    });
+                // Get all paragraphs within main content
+                const paragraphs = Array.from(mainContent.getElementsByTagName('p'));
 
                 console.log(`Found ${paragraphs.length} paragraphs to simplify in main content`);
                     for (let p of paragraphs) {
