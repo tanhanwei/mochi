@@ -4,23 +4,17 @@ let rewriter = null;
 // Initialize the AI capabilities
 async function initAICapabilities() {
   try {
-    // Check summarizer capabilities
-    const canSummarize = await ai.summarizer.capabilities();
-    if (canSummarize && canSummarize.available !== 'no') {
+    // Initialize summarizer
+    if (ai.summarizer) {
       summarizer = await ai.summarizer.create();
-      if (canSummarize.available !== 'readily') {
-        await summarizer.ready;
-      }
+      await summarizer.ready;
       console.log('Summarizer initialized successfully');
     }
     
-    // Check rewriter capabilities
-    const canRewrite = await ai.rewriter.capabilities();
-    if (canRewrite && canRewrite.available !== 'no') {
+    // Initialize rewriter
+    if (ai.rewriter) {
       rewriter = await ai.rewriter.create();
-      if (canRewrite.available !== 'readily') {
-        await rewriter.ready;
-      }
+      await rewriter.ready;
       console.log('Rewriter initialized successfully');
     }
   } catch (error) {
