@@ -5,20 +5,27 @@ let rewriter = null;
 async function initAICapabilities() {
   try {
     // Initialize summarizer
-    if (ai.summarizer) {
+    if (typeof ai !== 'undefined' && ai.summarizer) {
       summarizer = await ai.summarizer.create();
       await summarizer.ready;
       console.log('Summarizer initialized successfully');
+    } else {
+      console.warn('Summarizer API not available');
     }
     
     // Initialize rewriter
-    if (ai.rewriter) {
+    if (typeof ai !== 'undefined' && ai.rewriter) {
       rewriter = await ai.rewriter.create();
       await rewriter.ready;
       console.log('Rewriter initialized successfully');
+    } else {
+      console.warn('Rewriter API not available');
     }
+
+    return { summarizer, rewriter };
   } catch (error) {
-    console.error('Error initializing summarizer:', error);
+    console.error('Error initializing AI capabilities:', error);
+    throw error;
   }
 }
 
@@ -29,8 +36,14 @@ chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
             console.log("Simplifying page content...");
             try {
                 if (!rewriter) {
-                    await initAICapabilities();
+                    const capabilities = await initAICapabilities();
+                    if (!capabilities.rewriter) {
+                        console.error('Rewriter not available - cannot simplify text');
+                        return;
+                    }
                 }
+                
+                console.log('Rewriter status:', rewriter ? 'initialized' : 'not initialized');
                 
                 const mainContent = document.querySelector('main, article, .content, .post, #content, #main') 
                     || document.querySelector('div[role="main"]');
@@ -40,10 +53,12 @@ chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
                     for (let p of paragraphs) {
                         const originalText = p.textContent;
                         // Use AI rewriter to simplify the text
+                        console.log('Attempting to simplify text:', originalText.substring(0, 50) + '...');
                         const simplifiedText = await rewriter.simplify(originalText, {
                             level: 'basic',
                             preserveFormatting: true
                         });
+                        console.log('Simplified text:', simplifiedText.substring(0, 50) + '...');
                         
                         // Create new paragraph with simplified text
                         const newP = document.createElement('p');
