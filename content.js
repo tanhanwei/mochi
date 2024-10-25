@@ -85,8 +85,20 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                     id: mainContent.id
                 });
 
-                // Get all paragraphs within main content
-                const paragraphs = Array.from(mainContent.getElementsByTagName('p'));
+                // Get paragraphs within main content, excluding metadata sections
+                const paragraphs = Array.from(mainContent.getElementsByTagName('p'))
+                    .filter(p => {
+                        // Skip paragraphs that are likely metadata
+                        const isMetadata = 
+                            // Check if parent or grandparent has classes indicating metadata
+                            p.closest('.author, .meta, .claps, .likes, .stats, .profile, .bio, header, footer') ||
+                            // Check if paragraph contains very short text (likely metadata)
+                            p.textContent.trim().length < 50 ||
+                            // Check if paragraph starts with common metadata patterns
+                            /^(By|Published|Updated|Written by|(\d+) min read|(\d+) claps)/i.test(p.textContent.trim());
+                        
+                        return !isMetadata;
+                    });
 
                 console.log(`Found ${paragraphs.length} paragraphs to simplify in main content`);
                     for (let p of paragraphs) {
