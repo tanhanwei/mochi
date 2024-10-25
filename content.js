@@ -158,16 +158,37 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                         console.log('Attempting to simplify chunk:', chunkText.substring(0, 50) + '...');
                         
                         let simplifiedText;
-                        try {
-                            simplifiedText = await promptAPI.prompt(
-                                `Rewrite this English text to make it easier to understand for those with ADHD. Use simple language and short sentences. Keep all proper names and quotes exactly as they are. Preserve paragraph breaks. Keep the same basic structure but make it clearer: "${chunkText}"`
-                            );
-                        } catch (err) {
-                            if (err.name === 'NotSupportedError' && err.message.includes('untested language')) {
-                                console.log('Skipping chunk due to unsupported language:', chunkText.substring(0, 50) + '...');
-                                continue;
+                        const maxRetries = 3;
+                        let attempt = 0;
+                        let success = false;
+
+                        while (attempt < maxRetries && !success) {
+                            try {
+                                // Modify prompt slightly on retries to help avoid language detection issues
+                                const retryModifier = attempt > 0 ? ` (Attempt ${attempt + 1}: This is English text)` : '';
+                                
+                                simplifiedText = await promptAPI.prompt(
+                                    `Rewrite the following English language text${retryModifier} to make it easier to understand for those with ADHD. Use simple language and short sentences. Keep all proper names, places, and quotes exactly as they are. Preserve paragraph breaks. Keep the same basic structure but make it clearer: "${chunkText}"`
+                                );
+                                success = true;
+                            } catch (err) {
+                                attempt++;
+                                if (err.name === 'NotSupportedError' && err.message.includes('untested language')) {
+                                    console.log(`Language detection failed on attempt ${attempt}/${maxRetries}:`, {
+                                        chunk: chunkText.substring(0, 100) + '...',
+                                        error: err.message
+                                    });
+                                    
+                                    if (attempt === maxRetries) {
+                                        console.warn('All retry attempts failed - skipping chunk');
+                                        continue;
+                                    }
+                                    // Add small delay between retries
+                                    await new Promise(resolve => setTimeout(resolve, 1000));
+                                } else {
+                                    throw err; // Re-throw other errors
+                                }
                             }
-                            throw err; // Re-throw other errors
                         }
 
                         if (!simplifiedText || simplifiedText.trim().length === 0) {
