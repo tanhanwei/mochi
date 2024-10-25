@@ -158,36 +158,57 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                         console.log('Attempting to simplify chunk:', chunkText.substring(0, 50) + '...');
                         
                         let simplifiedText;
-                        const maxRetries = 3;
-                        let attempt = 0;
-                        let success = false;
-
-                        while (attempt < maxRetries && !success) {
-                            try {
-                                // Modify prompt slightly on retries to help avoid language detection issues
-                                const retryModifier = attempt > 0 ? ` (Attempt ${attempt + 1}: This is English text)` : '';
+                        // First attempt with original text
+                        try {
+                            simplifiedText = await promptAPI.prompt(
+                                `Rewrite the following English language text to make it easier to understand for those with ADHD. Use simple language and short sentences. Keep all proper names, places, and quotes exactly as they are. Preserve paragraph breaks. Keep the same basic structure but make it clearer: "${chunkText}"`
+                            );
+                        } catch (err) {
+                            if (err.name === 'NotSupportedError' && err.message.includes('untested language')) {
+                                console.log('Detected non-English content, attempting to identify problematic words...');
                                 
-                                simplifiedText = await promptAPI.prompt(
-                                    `Rewrite the following English language text${retryModifier} to make it easier to understand for those with ADHD. Use simple language and short sentences. Keep all proper names, places, and quotes exactly as they are. Preserve paragraph breaks. Keep the same basic structure but make it clearer: "${chunkText}"`
-                                );
-                                success = true;
-                            } catch (err) {
-                                attempt++;
-                                if (err.name === 'NotSupportedError' && err.message.includes('untested language')) {
-                                    console.log(`Language detection failed on attempt ${attempt}/${maxRetries}:`, {
-                                        chunk: chunkText.substring(0, 100) + '...',
-                                        error: err.message
+                                // Try to identify non-English words
+                                try {
+                                    const analysis = await promptAPI.prompt(
+                                        `Analyze this text and list ONLY the non-English words or phrases that might trigger language detection issues. Return them as a comma-separated list with no additional text: "${chunkText}"`
+                                    );
+                                    
+                                    const nonEnglishWords = analysis.split(',').map(word => word.trim());
+                                    console.log('Identified non-English words:', nonEnglishWords);
+                                    
+                                    // Replace non-English words with placeholders
+                                    let modifiedText = chunkText;
+                                    const replacements = new Map();
+                                    
+                                    nonEnglishWords.forEach((word, index) => {
+                                        if (word && modifiedText.includes(word)) {
+                                            const placeholder = `[NAME${index + 1}]`;
+                                            replacements.set(placeholder, word);
+                                            modifiedText = modifiedText.replace(new RegExp(word, 'g'), placeholder);
+                                        }
                                     });
                                     
-                                    if (attempt === maxRetries) {
-                                        console.warn('All retry attempts failed - skipping chunk');
-                                        continue;
+                                    // Try simplification with replaced text
+                                    try {
+                                        simplifiedText = await promptAPI.prompt(
+                                            `Rewrite the following English text to make it easier to understand for those with ADHD. Use simple language and short sentences. Preserve paragraph breaks. Keep the same basic structure but make it clearer. DO NOT modify any [NAME#] placeholders: "${modifiedText}"`
+                                        );
+                                        
+                                        // Restore original names
+                                        replacements.forEach((original, placeholder) => {
+                                            simplifiedText = simplifiedText.replace(new RegExp(placeholder, 'g'), original);
+                                        });
+                                        
+                                    } catch (error) {
+                                        console.error('Failed to simplify even with replacements:', error);
+                                        throw error;
                                     }
-                                    // Add small delay between retries
-                                    await new Promise(resolve => setTimeout(resolve, 1000));
-                                } else {
-                                    throw err; // Re-throw other errors
+                                } catch (error) {
+                                    console.error('Failed to analyze non-English content:', error);
+                                    throw error;
                                 }
+                            } else {
+                                throw err; // Re-throw other errors
                             }
                         }
 
