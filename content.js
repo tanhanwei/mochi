@@ -50,13 +50,10 @@ chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
         case "simplify":
             console.log("Simplify action received");
             try {
+                await ensureInitialized();
                 if (!rewriter) {
-                    console.log('Rewriter not initialized, attempting to initialize AI capabilities...');
-                    const capabilities = await initAICapabilities();
-                    if (!capabilities.rewriter) {
-                        console.error('Failed to initialize rewriter - cannot simplify text');
-                        return;
-                    }
+                    console.error('Rewriter not available - cannot simplify text');
+                    return;
                 }
                 
                 console.log('Finding main content element...');
@@ -110,8 +107,10 @@ chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
             
         case "summarize":
             try {
+                await ensureInitialized();
                 if (!summarizer) {
-                    await initSummarizer();
+                    console.error('Summarizer not available - cannot generate summary');
+                    return;
                 }
                 const mainContent = document.querySelector('main, article, .content');
                 if (mainContent) {
@@ -227,12 +226,23 @@ function adjustLayout() {
 }
 
 // Initialize AI capabilities when content script loads
-console.log('Content script loaded');
-initAICapabilities().then(() => {
-    console.log('Content script setup complete with capabilities:', {
-        summarizerAvailable: !!summarizer,
-        rewriterAvailable: !!rewriter
-    });
-}).catch(error => {
-    console.error('Failed to initialize AI capabilities:', error);
-});
+let initializationPromise = null;
+
+function ensureInitialized() {
+    if (!initializationPromise) {
+        console.log('Content script loaded - starting initialization');
+        initializationPromise = initAICapabilities().then(() => {
+            console.log('Content script setup complete with capabilities:', {
+                summarizerAvailable: !!summarizer,
+                rewriterAvailable: !!rewriter
+            });
+        }).catch(error => {
+            console.error('Failed to initialize AI capabilities:', error);
+            initializationPromise = null; // Allow retry on failure
+        });
+    }
+    return initializationPromise;
+}
+
+// Initialize on load
+ensureInitialized();
