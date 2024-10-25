@@ -1,8 +1,10 @@
 let summarizer = null;
+let rewriter = null;
 
-// Initialize the summarizer
-async function initSummarizer() {
+// Initialize the AI capabilities
+async function initAICapabilities() {
   try {
+    // Check summarizer capabilities
     const canSummarize = await ai.summarizer.capabilities();
     if (canSummarize && canSummarize.available !== 'no') {
       summarizer = await ai.summarizer.create();
@@ -10,6 +12,16 @@ async function initSummarizer() {
         await summarizer.ready;
       }
       console.log('Summarizer initialized successfully');
+    }
+    
+    // Check rewriter capabilities
+    const canRewrite = await ai.rewriter.capabilities();
+    if (canRewrite && canRewrite.available !== 'no') {
+      rewriter = await ai.rewriter.create();
+      if (canRewrite.available !== 'readily') {
+        await rewriter.ready;
+      }
+      console.log('Rewriter initialized successfully');
     }
   } catch (error) {
     console.error('Error initializing summarizer:', error);
@@ -22,26 +34,26 @@ chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
         case "simplify":
             console.log("Simplifying page content...");
             try {
+                if (!rewriter) {
+                    await initAICapabilities();
+                }
+                
                 const mainContent = document.querySelector('main, article, .content, .post, #content, #main') 
                     || document.querySelector('div[role="main"]');
                 
-                if (mainContent) {
-                    // Basic text simplification rules
+                if (mainContent && rewriter) {
                     const paragraphs = mainContent.getElementsByTagName('p');
                     for (let p of paragraphs) {
-                        let text = p.textContent;
-                        // Break long sentences
-                        text = text.replace(/([.!?])\s+/g, '$1\n\n');
-                        // Replace complex words (example replacements)
-                        text = text.replace(/utilize/g, 'use')
-                            .replace(/implement/g, 'use')
-                            .replace(/facilitate/g, 'help')
-                            .replace(/leverage/g, 'use')
-                            .replace(/optimize/g, 'improve');
+                        const originalText = p.textContent;
+                        // Use AI rewriter to simplify the text
+                        const simplifiedText = await rewriter.simplify(originalText, {
+                            level: 'basic',
+                            preserveFormatting: true
+                        });
                         
                         // Create new paragraph with simplified text
                         const newP = document.createElement('p');
-                        newP.textContent = text;
+                        newP.textContent = simplifiedText;
                         newP.style.backgroundColor = '#f0f8ff';
                         newP.style.padding = '10px';
                         newP.style.borderLeft = '3px solid #3498db';
@@ -187,5 +199,5 @@ function adjustLayout() {
     }
 }
 
-// Initialize summarizer when content script loads
-initSummarizer();
+// Initialize AI capabilities when content script loads
+initAICapabilities();
