@@ -160,7 +160,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                         let simplifiedText;
                         try {
                             simplifiedText = await promptAPI.prompt(
-                                `Rewrite this text to make it easier to understand for those with ADHD. Use simple language and short sentences. Preserve paragraph breaks. Keep the same basic structure but make it clearer: "${chunkText}"`
+                                `Rewrite this English text to make it easier to understand for those with ADHD. Use simple language and short sentences. Keep all proper names and quotes exactly as they are. Preserve paragraph breaks. Keep the same basic structure but make it clearer: "${chunkText}"`
                             );
                         } catch (err) {
                             if (err.name === 'NotSupportedError' && err.message.includes('untested language')) {
