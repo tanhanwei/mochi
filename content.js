@@ -68,28 +68,78 @@ chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
                 
                 console.log('Prompt API status:', promptAPI ? 'initialized' : 'not initialized');
                 
+                // Try to find the main content using various selectors
                 const mainContent = document.querySelector('main, article, .content, .post, #content, #main') 
                     || document.querySelector('div[role="main"]');
                 
-                if (mainContent) {
-                    const paragraphs = mainContent.getElementsByTagName('p');
+                if (!mainContent) {
+                    console.error('Could not find main content element');
+                    return;
+                }
+
+                console.log('Found main content element:', {
+                    tagName: mainContent.tagName,
+                    className: mainContent.className,
+                    id: mainContent.id
+                });
+
+                // Only get paragraphs that are direct children or within one level of nesting
+                const paragraphs = Array.from(mainContent.getElementsByTagName('p'))
+                    .filter(p => {
+                        const isDirectChild = p.parentElement === mainContent;
+                        const isOneNested = p.parentElement.parentElement === mainContent;
+                        return isDirectChild || isOneNested;
+                    });
+
+                console.log(`Found ${paragraphs.length} paragraphs to simplify in main content`);
                     for (let p of paragraphs) {
                         const originalText = p.textContent;
                         // Use Prompt API to simplify the text
                         console.log('Attempting to simplify text:', originalText.substring(0, 50) + '...');
-                        const simplifiedText = await promptAPI.prompt(
-                            `Simplify this text to make it easier to understand: "${originalText}"`
-                        );
-                        console.log('Simplified text:', simplifiedText.substring(0, 50) + '...');
+                        console.log('Processing paragraph:', {
+                            length: originalText.length,
+                            preview: originalText.substring(0, 100) + '...'
+                        });
+
+                        try {
+                            const simplifiedText = await promptAPI.prompt(
+                                `Simplify this text to make it easier to understand: "${originalText}"`
+                            );
+                            
+                            console.log('API Response:', {
+                                original: {
+                                    length: originalText.length,
+                                    preview: originalText.substring(0, 100)
+                                },
+                                simplified: {
+                                    length: simplifiedText.length,
+                                    preview: simplifiedText.substring(0, 100)
+                                }
+                            });
+
+                            if (!simplifiedText || simplifiedText.trim().length === 0) {
+                                console.warn('Empty response from API - keeping original text');
+                                continue;
+                            }
                         
-                        // Create new paragraph with simplified text
-                        const newP = document.createElement('p');
-                        newP.textContent = simplifiedText;
-                        newP.style.backgroundColor = '#f0f8ff';
-                        newP.style.padding = '10px';
-                        newP.style.borderLeft = '3px solid #3498db';
-                        newP.style.margin = '10px 0';
-                        p.parentNode.replaceChild(newP, p);
+                            // Create new paragraph with simplified text
+                            const newP = document.createElement('p');
+                            newP.textContent = simplifiedText;
+                            newP.style.backgroundColor = '#f0f8ff';
+                            newP.style.padding = '10px';
+                            newP.style.borderLeft = '3px solid #3498db';
+                            newP.style.margin = '10px 0';
+                            
+                            // Add original text as hidden attribute for reference
+                            newP.setAttribute('data-original-text', originalText);
+                            
+                            p.parentNode.replaceChild(newP, p);
+                            console.log('Successfully replaced paragraph with simplified version');
+                        } catch (error) {
+                            console.error('Error simplifying paragraph:', error, {
+                                text: originalText.substring(0, 100) + '...'
+                            });
+                        }
                     }
 
                     // Add visual feedback
