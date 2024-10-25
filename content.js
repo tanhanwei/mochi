@@ -186,7 +186,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                             console.log('Successfully replaced paragraph with simplified version');
                         } catch (error) {
                             console.error('Error simplifying paragraph:', error, {
-                                text: originalText.substring(0, 100) + '...'
+                                text: chunkText.substring(0, 100) + '...'
                             });
                         }
                     }
