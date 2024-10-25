@@ -100,7 +100,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
                         try {
                             const simplifiedText = await promptAPI.prompt(
-                                `Simplify this text to make it easier to understand: "${originalText}"`
+                                `Rewrite this text to make it easier to understand for those with ADHD, use simple language, and short sentences, no need to elaborate and explain further. DO NOT use bullet points: "${originalText}"`
                             );
                             
                             console.log('API Response:', {
