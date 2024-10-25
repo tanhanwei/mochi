@@ -1,5 +1,5 @@
 let summarizer = null;
-let rewriter = null;
+let prompter = null;
 
 // Initialize the AI capabilities
 async function initAICapabilities() {
@@ -8,7 +8,7 @@ async function initAICapabilities() {
     // Check if AI API is available
     if (typeof ai === 'undefined') {
       console.error('AI API is not defined');
-      return { summarizer: null, rewriter: null };
+      return { summarizer: null, prompter: null };
     }
 
     // Initialize summarizer
@@ -22,35 +22,35 @@ async function initAICapabilities() {
       console.warn('Summarizer API not available in ai object:', ai);
     }
     
-    // Initialize rewriter
-    if (ai.rewriter) {
+    // Initialize prompter
+    if (ai.prompt) {
       try {
-        console.log('Creating rewriter...');
-        rewriter = await ai.rewriter.create();
-        if (!rewriter) {
-          throw new Error('Rewriter creation failed - returned null');
+        console.log('Creating prompter...');
+        prompter = await ai.prompt.create();
+        if (!prompter) {
+          throw new Error('Prompter creation failed - returned null');
         }
-        console.log('Waiting for rewriter to be ready...');
+        console.log('Waiting for prompter to be ready...');
         await Promise.race([
-          rewriter.ready,
+          prompter.ready,
           new Promise((_, reject) => 
-            setTimeout(() => reject(new Error('Rewriter ready timeout')), 10000)
+            setTimeout(() => reject(new Error('Prompter ready timeout')), 10000)
           )
         ]);
-        console.log('Rewriter initialized successfully');
+        console.log('Prompter initialized successfully');
       } catch (error) {
-        console.error('Failed to initialize rewriter:', error);
-        rewriter = null;
+        console.error('Failed to initialize prompter:', error);
+        prompter = null;
       }
     } else {
-      console.warn('Rewriter API not available in ai object:', ai);
+      console.warn('Prompt API not available in ai object:', ai);
     }
 
     console.log('AI capabilities initialization complete:', {
       summarizerAvailable: !!summarizer,
-      rewriterAvailable: !!rewriter
+      prompterAvailable: !!prompter
     });
-    return { summarizer, rewriter };
+    return { summarizer, prompter };
   } catch (error) {
     console.error('Error initializing AI capabilities:', error);
     throw error;
@@ -64,14 +64,14 @@ chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
             console.log("Simplify action received");
             try {
                 await ensureInitialized();
-                if (!rewriter) {
-                    console.error('Rewriter not available - cannot simplify text');
+                if (!prompter) {
+                    console.error('Prompter not available - cannot simplify text');
                     return;
                 }
                 
                 console.log('Finding main content element...');
                 
-                console.log('Rewriter status:', rewriter ? 'initialized' : 'not initialized');
+                console.log('Prompter status:', prompter ? 'initialized' : 'not initialized');
                 
                 const mainContent = document.querySelector('main, article, .content, .post, #content, #main') 
                     || document.querySelector('div[role="main"]');
@@ -80,11 +80,12 @@ chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
                     const paragraphs = mainContent.getElementsByTagName('p');
                     for (let p of paragraphs) {
                         const originalText = p.textContent;
-                        // Use AI rewriter to simplify the text
+                        // Use AI prompt to simplify the text
                         console.log('Attempting to simplify text:', originalText.substring(0, 50) + '...');
-                        const simplifiedText = await rewriter.simplify(originalText, {
-                            level: 'basic',
-                            preserveFormatting: true
+                        const prompt = `Please simplify this text to make it easier to understand, while preserving the key meaning: "${originalText}"`;
+                        const simplifiedText = await prompter.complete(prompt, {
+                            temperature: 0.7,
+                            max_tokens: 200
                         });
                         console.log('Simplified text:', simplifiedText.substring(0, 50) + '...');
                         
@@ -247,7 +248,7 @@ function ensureInitialized() {
         initializationPromise = initAICapabilities().then(() => {
             console.log('Content script setup complete with capabilities:', {
                 summarizerAvailable: !!summarizer,
-                rewriterAvailable: !!rewriter
+                prompterAvailable: !!prompter
             });
         }).catch(error => {
             console.error('Failed to initialize AI capabilities:', error);
