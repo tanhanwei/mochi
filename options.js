@@ -1,34 +1,26 @@
-// Saves options to chrome.storage
-function saveOptions() {
-    const rewriterApiKey = document.getElementById('rewriterApiKey').value;
-    const summarizerApiKey = document.getElementById('summarizerApiKey').value;
-    
-    chrome.storage.sync.set({
-        rewriterApiKey: rewriterApiKey,
-        summarizerApiKey: summarizerApiKey
-    }, function() {
-        // Update status to let user know options were saved.
+// Check AI capabilities when options page loads
+async function checkCapabilities() {
+    try {
         const status = document.getElementById('status');
-        status.textContent = 'Options saved.';
-        status.className = 'status success';
+        const canSummarize = await ai.summarizer.capabilities();
+        
+        if (canSummarize && canSummarize.available !== 'no') {
+            status.textContent = canSummarize.available === 'readily' ? 
+                'AI features are ready to use' : 
+                'AI features are downloading...';
+            status.className = 'status success';
+        } else {
+            status.textContent = 'AI features are not available on this device';
+            status.className = 'status error';
+        }
         status.style.display = 'block';
-        setTimeout(function() {
-            status.style.display = 'none';
-        }, 2000);
-    });
+    } catch (error) {
+        console.error('Error checking AI capabilities:', error);
+        const status = document.getElementById('status');
+        status.textContent = 'Error checking AI capabilities';
+        status.className = 'status error';
+        status.style.display = 'block';
+    }
 }
 
-// Restores select box and checkbox state using the preferences
-// stored in chrome.storage.
-function restoreOptions() {
-    chrome.storage.sync.get({
-        rewriterApiKey: '',
-        summarizerApiKey: ''
-    }, function(items) {
-        document.getElementById('rewriterApiKey').value = items.rewriterApiKey;
-        document.getElementById('summarizerApiKey').value = items.summarizerApiKey;
-    });
-}
-
-document.addEventListener('DOMContentLoaded', restoreOptions);
-document.getElementById('save').addEventListener('click', saveOptions);
+document.addEventListener('DOMContentLoaded', checkCapabilities);
