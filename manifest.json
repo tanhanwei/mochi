@@ -9,12 +9,7 @@
     "scripting"
   ],
   "action": {
-    "default_popup": "popup.html",
-    "default_icon": {
-      "16": "images/icon16.png",
-      "48": "images/icon48.png",
-      "128": "images/icon128.png"
-    }
+    "default_popup": "popup.html"
   },
   "background": {
     "service_worker": "background.js"
@@ -23,10 +18,5 @@
     "matches": ["<all_urls>"],
     "js": ["content.js"]
   }],
-  "options_page": "options.html",
-  "icons": {
-    "16": "images/icon16.png",
-    "48": "images/icon48.png",
-    "128": "images/icon128.png"
-  }
+  "options_page": "options.html"
 }
