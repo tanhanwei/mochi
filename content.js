@@ -157,10 +157,19 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                     try {
                         console.log('Attempting to simplify chunk:', chunkText.substring(0, 50) + '...');
                         
-                        const simplifiedText = await promptAPI.prompt(
-                            `Rewrite this text to make it easier to understand for those with ADHD. Use simple language and short sentences. Preserve paragraph breaks. Keep the same basic structure but make it clearer: "${chunkText}"`
-                        );
-                            
+                        let simplifiedText;
+                        try {
+                            simplifiedText = await promptAPI.prompt(
+                                `Rewrite this text to make it easier to understand for those with ADHD. Use simple language and short sentences. Preserve paragraph breaks. Keep the same basic structure but make it clearer: "${chunkText}"`
+                            );
+                        } catch (err) {
+                            if (err.name === 'NotSupportedError' && err.message.includes('untested language')) {
+                                console.log('Skipping chunk due to unsupported language:', chunkText.substring(0, 50) + '...');
+                                continue;
+                            }
+                            throw err; // Re-throw other errors
+                        }
+
                         if (!simplifiedText || simplifiedText.trim().length === 0) {
                             console.warn('Empty response from API - keeping original text');
                             continue;
