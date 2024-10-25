@@ -24,11 +24,24 @@ async function initAICapabilities() {
     
     // Initialize rewriter
     if (ai.rewriter) {
-      console.log('Creating rewriter...');
-      rewriter = await ai.rewriter.create();
-      console.log('Waiting for rewriter to be ready...');
-      await rewriter.ready;
-      console.log('Rewriter initialized successfully');
+      try {
+        console.log('Creating rewriter...');
+        rewriter = await ai.rewriter.create();
+        if (!rewriter) {
+          throw new Error('Rewriter creation failed - returned null');
+        }
+        console.log('Waiting for rewriter to be ready...');
+        await Promise.race([
+          rewriter.ready,
+          new Promise((_, reject) => 
+            setTimeout(() => reject(new Error('Rewriter ready timeout')), 10000)
+          )
+        ]);
+        console.log('Rewriter initialized successfully');
+      } catch (error) {
+        console.error('Failed to initialize rewriter:', error);
+        rewriter = null;
+      }
     } else {
       console.warn('Rewriter API not available in ai object:', ai);
     }
