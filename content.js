@@ -169,11 +169,15 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                                 
                                 // Try to identify non-English words
                                 try {
+                                    // First try to extract just proper names and special terms
                                     const analysis = await promptAPI.prompt(
-                                        `Analyze this text and list ONLY the non-English words or phrases that might trigger language detection issues. Return them as a comma-separated list with no additional text: "${chunkText}"`
+                                        `Identify ONLY proper names and special terms from this text. Return them as a comma-separated list, no explanations: "${chunkText}"`
                                     );
-                                    
-                                    const nonEnglishWords = analysis.split(',').map(word => word.trim());
+                                
+                                    // Filter out empty or invalid entries
+                                    const nonEnglishWords = analysis.split(',')
+                                        .map(word => word.trim())
+                                        .filter(word => word && word.length > 1);
                                     console.log('Identified non-English words:', nonEnglishWords);
                                     
                                     // Replace non-English words with placeholders
@@ -188,11 +192,27 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                                         }
                                     });
                                     
-                                    // Try simplification with replaced text
+                                    // Try simplification with replaced text, using a more specific prompt
                                     try {
-                                        simplifiedText = await promptAPI.prompt(
-                                            `Rewrite the following English text to make it easier to understand for those with ADHD. Use simple language and short sentences. Preserve paragraph breaks. Keep the same basic structure but make it clearer. DO NOT modify any [NAME#] placeholders: "${modifiedText}"`
-                                        );
+                                        const attempts = 3;
+                                        for (let i = 0; i < attempts; i++) {
+                                            try {
+                                                simplifiedText = await promptAPI.prompt(
+                                                    `Your task is to simplify this English text while keeping all [NAME#] placeholders unchanged:
+                                                    1. Use basic English words and short sentences
+                                                    2. Break complex ideas into simple parts
+                                                    3. Keep paragraph structure
+                                                    4. Do NOT change any [NAME#] placeholders
+                                                    5. Do NOT add any explanations
+                                                    
+                                                    Text to simplify: "${modifiedText}"`
+                                                );
+                                                break; // Success - exit loop
+                                            } catch (retryError) {
+                                                if (i === attempts - 1) throw retryError; // Last attempt failed
+                                                await new Promise(resolve => setTimeout(resolve, 1000 * (i + 1))); // Exponential backoff
+                                            }
+                                        }
                                         
                                         // Restore original names
                                         replacements.forEach((original, placeholder) => {
