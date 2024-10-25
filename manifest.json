@@ -3,6 +3,11 @@
   "name": "MindMeld",
   "version": "1.0",
   "description": "Enhances web accessibility for cognitive diversity by simplifying and transforming web content",
+  "icons": {
+    "16": "images/icon16.png",
+    "48": "images/icon48.png",
+    "128": "images/icon128.png"
+  },
   "permissions": [
     "activeTab",
     "storage",
