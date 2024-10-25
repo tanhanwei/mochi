@@ -77,7 +77,7 @@ chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
                         const originalText = p.textContent;
                         // Use Prompt API to simplify the text
                         console.log('Attempting to simplify text:', originalText.substring(0, 50) + '...');
-                        const simplifiedText = await promptAPI.complete({
+                        const simplifiedText = await promptAPI.generateText({
                             prompt: `Simplify this text to make it easier to understand: "${originalText}"`,
                             maxTokens: 200,
                             temperature: 0.3
