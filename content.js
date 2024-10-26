@@ -329,7 +329,7 @@ function ensureInitialized() {
         initializationPromise = initAICapabilities().then(() => {
             console.log('Content script setup complete with capabilities:', {
                 summarizerAvailable: !!summarizer,
-                promptAPIAvailable: !!promptAPI
+                promptSessionAvailable: !!promptSession
             });
         }).catch(error => {
             console.error('Failed to initialize AI capabilities:', error);
