@@ -28,24 +28,29 @@ const logger = {
     async _writeLogs() {
         if (this.logs.length === 0) return;
 
-        const blob = new Blob([this.logs.join('\n') + '\n'], { type: 'text/plain' });
-        const downloadUrl = URL.createObjectURL(blob);
-        
+        const logText = this.logs.join('\n') + '\n';
+        const timestamp = new Date().toISOString().slice(0,19).replace(/:/g,'-');
+        const logData = {
+            timestamp: timestamp,
+            content: logText
+        };
+
         try {
-            const response = await fetch(downloadUrl);
-            const text = await response.text();
+            // Store logs in chrome.storage.local
+            await chrome.storage.local.set({
+                [`log_${timestamp}`]: logData
+            });
             
-            // Create download link
-            const a = document.createElement('a');
-            a.style.display = 'none';
-            a.href = downloadUrl;
-            a.download = `mindmeld-log-${new Date().toISOString().slice(0,19).replace(/:/g,'-')}.txt`;
-            
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
+            // Keep only last 50 log entries
+            const keys = await chrome.storage.local.get(null);
+            const logKeys = Object.keys(keys).filter(k => k.startsWith('log_')).sort();
+            if (logKeys.length > 50) {
+                const keysToRemove = logKeys.slice(0, logKeys.length - 50);
+                await chrome.storage.local.remove(keysToRemove);
+            }
+        } catch (error) {
+            console.error('Error writing logs:', error);
         } finally {
-            URL.revokeObjectURL(downloadUrl);
             this.logs = [];
             this.lastWrite = Date.now();
         }
