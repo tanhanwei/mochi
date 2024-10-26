@@ -50,7 +50,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                 
                 console.log('Finding main content element...');
                 
-                console.log('Prompt API status:', promptAPI ? 'initialized' : 'not initialized');
+                console.log('Prompt API status:', promptSession ? 'initialized' : 'not initialized');
                 
                 // Try to find the main content using various selectors
                 const mainContent = document.querySelector('main, article, .content, .post, #content, #main') 
