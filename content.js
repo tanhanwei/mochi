@@ -148,13 +148,21 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                             wordCount: chunkText.split(/\s+/).length
                         });
                         
-                        // Send the chunkText as the prompt with retries
+                        // Send the chunkText as the prompt with retries and API reinitialization
                         let simplifiedText = '';
                         let attempts = 0;
                         const maxAttempts = 20;
                         
                         while (attempts < maxAttempts) {
                             try {
+                                // Reinitialize the Prompt API before each attempt
+                                const { defaultTemperature, defaultTopK } = await self.ai.languageModel.capabilities();
+                                promptSession = await self.ai.languageModel.create({
+                                    temperature: defaultTemperature,
+                                    topK: defaultTopK,
+                                    systemPrompt: `You are a helpful assistant that rewrites text to make it easier to understand for those with ADHD. You use simple language and short sentences. You keep all proper names, places, and quotes exactly as they are. You preserve paragraph breaks. You keep the same basic structure but make it clearer.`
+                                });
+                                
                                 const stream = await promptSession.promptStreaming(chunkText);
                                 for await (const chunk of stream) {
                                     simplifiedText = chunk.trim();
@@ -165,7 +173,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                                     break;
                                 }
                                 
-                                console.warn(`Empty response from API on attempt ${attempts + 1} - retrying...`);
+                                console.warn(`Empty response from API on attempt ${attempts + 1} - retrying with new API session...`);
                             } catch (error) {
                                 console.warn(`API error on attempt ${attempts + 1}:`, error);
                                 if (attempts === maxAttempts - 1) {
@@ -175,7 +183,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                             
                             attempts++;
                             // Add a small delay between retries
-                            await new Promise(resolve => setTimeout(resolve, 100));
+                            await new Promise(resolve => setTimeout(resolve, 500)); // Increased delay to 500ms
                         }
 
                         if (!simplifiedText || simplifiedText.trim().length === 0) {
