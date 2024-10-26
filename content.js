@@ -227,13 +227,18 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                             if (simplifiedParagraphs.length > originalParagraphs.length) {
                                 simplifiedParagraphs.length = originalParagraphs.length;
                             }
-                            // If we got fewer simplified paragraphs, remove the corresponding original paragraphs
+                            // If we got fewer simplified paragraphs, remove extra original paragraphs
                             if (simplifiedParagraphs.length < originalParagraphs.length) {
+                                // Remove the extra original paragraphs from the DOM
+                                for (let i = simplifiedParagraphs.length; i < originalParagraphs.length; i++) {
+                                    originalParagraphs[i].remove();
+                                }
+                                // Update the array to match simplified length
                                 originalParagraphs.length = simplifiedParagraphs.length;
                             }
                         }
 
-                        // Replace each original paragraph with its simplified version
+                        // Replace remaining original paragraphs with simplified versions
                         originalParagraphs.forEach((p, index) => {
                             const newP = document.createElement('p');
                             newP.textContent = simplifiedParagraphs[index];
