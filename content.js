@@ -128,8 +128,18 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
                 // Process each chunk
                 for (let chunk of chunks) {
+                    // Log full chunk details before processing
+                    console.log('Processing chunk:', {
+                        elements: chunk.length,
+                        types: chunk.map(el => el.tagName).join(', '),
+                        isHeaderOnly: chunk.length === 1 && isHeader(chunk[0])
+                    });
+
                     // Skip chunks that only contain headers
-                    if (chunk.length === 1 && isHeader(chunk[0])) continue;
+                    if (chunk.length === 1 && isHeader(chunk[0])) {
+                        console.log('Skipping header-only chunk');
+                        continue;
+                    }
 
                     // Combine paragraph texts in the chunk
                     const chunkText = chunk
@@ -138,7 +148,11 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                         .join('\n\n');
 
                     try {
-                        console.log('Attempting to simplify chunk:', chunkText.substring(0, 50) + '...');
+                        console.log('Attempting to simplify chunk:', {
+                            fullText: chunkText,
+                            length: chunkText.length,
+                            paragraphs: chunkText.split('\n\n').length
+                        });
                         
                         // First attempt with original text
                         // Log the exact prompt being sent
