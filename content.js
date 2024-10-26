@@ -8,7 +8,7 @@ async function initAICapabilities() {
         // Check if AI API is available
         if (!self.ai || !self.ai.languageModel) {
             logger.error('AI API is not available');
-            return { summarizer: null, promptSession: null };
+            return { summarizer: null, promptSession: null }; 
         }
 
         // Initialize summarizer
