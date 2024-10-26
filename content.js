@@ -139,7 +139,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                     try {
                         console.log('Attempting to simplify chunk:', chunkText.substring(0, 50) + '...');
                         
-                        let simplifiedText;
                         // First attempt with original text
                         const stream = await promptSession.promptStreaming(
                             `Rewrite the following text to make it easier to understand for those with ADHD. Use simple language and short sentences. Keep all proper names, places, and quotes exactly as they are. Preserve paragraph breaks. Keep the same basic structure but make it clearer: "${chunkText}"`
