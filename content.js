@@ -438,22 +438,31 @@ function adjustLayout() {
             // Add OpenDyslexic font from jsDelivr CDN
             const fontLink = document.createElement('link');
             fontLink.rel = 'stylesheet';
-            // Get font preference and apply
-            chrome.storage.sync.get(['useOpenDyslexic'], function(result) {
-                if (result.useOpenDyslexic) {
-                    const style = document.createElement('style');
-                    style.textContent = `
-                        @font-face {
-                            font-family: 'OpenDyslexic';
-                            src: url('chrome-extension://${chrome.runtime.id}/fonts/OpenDyslexic-Regular.otf') format('opentype');
-                            font-weight: normal;
-                            font-style: normal;
-                        }
-                    `;
-                    document.head.appendChild(style);
-                    document.documentElement.style.setProperty('--font-family', 'OpenDyslexic, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif');
+            // Always apply OpenDyslexic font by default
+            console.log('Attempting to apply OpenDyslexic font...');
+            const style = document.createElement('style');
+            style.textContent = `
+                @font-face {
+                    font-family: 'OpenDyslexic';
+                    src: url('chrome-extension://${chrome.runtime.id}/fonts/OpenDyslexic-Regular.otf') format('opentype');
+                    font-weight: normal;
+                    font-style: normal;
+                }
+            `;
+            document.head.appendChild(style);
+            console.log('Font face style added to document head');
+            
+            // Apply the font to the main content
+            mainContent.style.fontFamily = 'OpenDyslexic, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif';
+            console.log('Font family applied to main content:', mainContent.style.fontFamily);
+            
+            // Verify font loading
+            document.fonts.ready.then(() => {
+                console.log('Fonts loaded:', Array.from(document.fonts).map(f => f.family));
+                if (document.fonts.check('12px OpenDyslexic')) {
+                    console.log('OpenDyslexic font is available');
                 } else {
-                    document.documentElement.style.setProperty('--font-family', '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif');
+                    console.log('OpenDyslexic font is not available');
                 }
             });
             mainContent.style.color = '#2c3e50';
