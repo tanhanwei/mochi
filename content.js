@@ -275,8 +275,13 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                             } else {
                                 // Handle regular paragraphs
                                 newElement = document.createElement('p');
-                                // Use marked to parse markdown
-                                newElement.innerHTML = window.marked.parse(simplifiedParagraphs[index], {
+                                // Use marked to parse markdown, falling back to plain text if marked is not available
+                                newElement.innerHTML = (typeof window.marked !== 'undefined' && window.marked.parse) ? 
+                                    window.marked.parse(simplifiedParagraphs[index], {
+                                        breaks: true,
+                                        gfm: true
+                                    }) : 
+                                    simplifiedParagraphs[index];
                                     breaks: true,
                                     gfm: true
                                 });
