@@ -148,16 +148,38 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                             wordCount: chunkText.split(/\s+/).length
                         });
                         
-                        // Send only the chunkText as the prompt
-                        const stream = await promptSession.promptStreaming(chunkText);
-
+                        // Send the chunkText as the prompt with retries
                         let simplifiedText = '';
-                        for await (const chunk of stream) {
-                            simplifiedText = chunk.trim();
+                        let attempts = 0;
+                        const maxAttempts = 20;
+                        
+                        while (attempts < maxAttempts) {
+                            try {
+                                const stream = await promptSession.promptStreaming(chunkText);
+                                for await (const chunk of stream) {
+                                    simplifiedText = chunk.trim();
+                                }
+                                
+                                if (simplifiedText && simplifiedText.trim().length > 0) {
+                                    console.log(`Successfully simplified text on attempt ${attempts + 1}`);
+                                    break;
+                                }
+                                
+                                console.warn(`Empty response from API on attempt ${attempts + 1} - retrying...`);
+                            } catch (error) {
+                                console.warn(`API error on attempt ${attempts + 1}:`, error);
+                                if (attempts === maxAttempts - 1) {
+                                    throw error; // Rethrow on final attempt
+                                }
+                            }
+                            
+                            attempts++;
+                            // Add a small delay between retries
+                            await new Promise(resolve => setTimeout(resolve, 100));
                         }
 
                         if (!simplifiedText || simplifiedText.trim().length === 0) {
-                            console.warn('Empty response from API - keeping original text');
+                            console.warn('Failed to get valid response after all attempts - keeping original text');
                             continue;
                         }
 
