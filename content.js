@@ -95,6 +95,11 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
                 console.log(`Found ${contentElements.length} content elements to process`);
 
+                // Helper function to check if element is a list
+                const isList = (element) => {
+                    return ['UL', 'OL', 'DL'].includes(element.tagName);
+                };
+
                 // Group elements into chunks
                 const chunks = [];
                 let currentChunk = [];
@@ -103,11 +108,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
                 for (let i = 0; i < contentElements.length; i++) {
                     const element = contentElements[i];
-                    
-                    // Helper function to check if element is a list
-                    const isList = (element) => {
-                        return ['UL', 'OL', 'DL'].includes(element.tagName);
-                    };
 
                     // If we hit a header, list, or the chunk is getting too big, start a new chunk
                     if (isHeader(element) || isList(element) ||
@@ -272,7 +272,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                             
                             console.log(`Replaced paragraph ${index + 1}/${originalParagraphs.length}:`, {
                                 original: p.textContent.substring(0, 50) + '...',
-                                simplified: newP.textContent.substring(0, 50) + '...'
+                                simplified: newElement.textContent.substring(0, 50) + '...'
                             });
                         });
                             console.log('Successfully replaced paragraph with simplified version');
