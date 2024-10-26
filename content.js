@@ -453,17 +453,52 @@ function adjustLayout() {
             console.log('Font face style added to document head');
             
             // Apply the font to the main content
-            // Apply stronger font override
+            // Apply strongest possible font override
             const fontStyle = document.createElement('style');
             fontStyle.textContent = `
-                ${mainContent.tagName.toLowerCase()} {
+                /* Target specific news sites */
+                article, 
+                .article-content,
+                .article-body,
+                .article__content,
+                .article__body,
+                .content-body,
+                .story-body,
+                [class*="article"],
+                [class*="content"],
+                [class*="story"] {
                     font-family: 'OpenDyslexic', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif !important;
                 }
-                ${mainContent.tagName.toLowerCase()} * {
-                    font-family: inherit !important;
+
+                /* Override all text elements */
+                ${mainContent.tagName.toLowerCase()},
+                ${mainContent.tagName.toLowerCase()} *,
+                ${mainContent.tagName.toLowerCase()} p,
+                ${mainContent.tagName.toLowerCase()} div,
+                ${mainContent.tagName.toLowerCase()} span,
+                ${mainContent.tagName.toLowerCase()} li {
+                    font-family: 'OpenDyslexic', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif !important;
+                    -webkit-font-family: 'OpenDyslexic', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif !important;
+                }
+
+                /* Force override any dynamic styles */
+                @layer {
+                    ${mainContent.tagName.toLowerCase()} * {
+                        font-family: 'OpenDyslexic', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif !important;
+                    }
                 }
             `;
+            
+            // Ensure the style is inserted at the end of head
             document.head.appendChild(fontStyle);
+            
+            // Also inject into shadow DOM roots if they exist
+            const shadowRoots = document.querySelectorAll('*');
+            shadowRoots.forEach(element => {
+                if (element.shadowRoot) {
+                    element.shadowRoot.appendChild(fontStyle.cloneNode(true));
+                }
+            });
             console.log('Font family applied to main content:', mainContent.style.fontFamily);
             
             // Verify font loading
