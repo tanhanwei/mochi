@@ -438,16 +438,23 @@ function adjustLayout() {
             // Add OpenDyslexic font from jsDelivr CDN
             const fontLink = document.createElement('link');
             fontLink.rel = 'stylesheet';
-            fontLink.href = 'https://cdn.jsdelivr.net/npm/opendyslexic@1.0.0/dist/opendyslexic.min.css';
-            document.head.appendChild(fontLink);
-            
             // Get font preference and apply
             chrome.storage.sync.get(['useOpenDyslexic'], function(result) {
-                document.documentElement.style.setProperty('--font-family', 
-                    result.useOpenDyslexic ? 
-                    'OpenDyslexic, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif' :
-                    '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif'
-                );
+                if (result.useOpenDyslexic) {
+                    const style = document.createElement('style');
+                    style.textContent = `
+                        @font-face {
+                            font-family: 'OpenDyslexic';
+                            src: url('chrome-extension://${chrome.runtime.id}/fonts/OpenDyslexic-Regular.otf') format('opentype');
+                            font-weight: normal;
+                            font-style: normal;
+                        }
+                    `;
+                    document.head.appendChild(style);
+                    document.documentElement.style.setProperty('--font-family', 'OpenDyslexic, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif');
+                } else {
+                    document.documentElement.style.setProperty('--font-family', '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif');
+                }
             });
             mainContent.style.color = '#2c3e50';
             mainContent.style.backgroundColor = '#ffffff';
