@@ -23,7 +23,7 @@ async function initAICapabilities() {
         promptSession = await self.ai.languageModel.create({
             temperature: defaultTemperature,
             topK: defaultTopK,
-            systemPrompt: `You are a helpful assistant that rewrites text to make it easier to understand for 5 year olds. You use very very simple language and short sentences. You keep all proper names, places, and quotes exactly as they are. You preserve paragraph breaks. You keep the same basic structure but make it clearer. Do not use bullet points if not found in original text. Respond with the new text only without ANY messages.`
+            systemPrompt: `You are a helpful assistant that rewrites text to make it easier to understand for 5 year olds. You use very very simple language and short sentences. You keep all proper names, places, and quotes exactly as they are. You preserve paragraph breaks. You keep the same basic structure but make it clearer. For regular paragraphs, do not use bullet points if not found in original text. For any lists (numbered, bulleted, or otherwise), preserve the list format but simplify the language of each item. Respond with the new text only without ANY messages.`
         });
         console.log('Language Model initialized successfully');
 
@@ -78,17 +78,18 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                     return text.split(/\s+/).length * 1.3; // Multiply by 1.3 as a safety factor
                 };
 
-                // Get all content elements (paragraphs and headers)
-                const contentElements = Array.from(mainContent.querySelectorAll('p, h1, h2, h3, h4, h5, h6'))
+                // Get all content elements (paragraphs, headers, and lists)
+                const contentElements = Array.from(mainContent.querySelectorAll('p, h1, h2, h3, h4, h5, h6, ul, ol, dl'))
                     .filter(el => {
                         if (isHeader(el)) return true;
                         
-                        // Skip paragraphs that are likely metadata
+                        // Skip elements that are likely metadata
                         const isMetadata = 
                             el.closest('.author, .meta, .claps, .likes, .stats, .profile, .bio, header, footer') ||
-                            el.textContent.trim().length < 50 ||
+                            (el.tagName !== 'UL' && el.tagName !== 'OL' && el.tagName !== 'DL' && el.textContent.trim().length < 50) ||
                             /^(By|Published|Updated|Written by|(\d+) min read|(\d+) claps)/i.test(el.textContent.trim());
                         
+                        // Include if it's not metadata and either a list or paragraph/header
                         return !isMetadata;
                     });
 
@@ -103,8 +104,13 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                 for (let i = 0; i < contentElements.length; i++) {
                     const element = contentElements[i];
                     
-                    // If we hit a header or the chunk is getting too big, start a new chunk
-                    if (isHeader(element) || 
+                    // Helper function to check if element is a list
+                    const isList = (element) => {
+                        return ['UL', 'OL', 'DL'].includes(element.tagName);
+                    };
+
+                    // If we hit a header, list, or the chunk is getting too big, start a new chunk
+                    if (isHeader(element) || isList(element) ||
                         (currentChunk.length > 0 && 
                          (currentTokenCount + estimateTokens(element.textContent) > MAX_TOKENS))) {
                         
@@ -135,8 +141,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                         isHeaderOnly: chunk.length === 1 && isHeader(chunk[0])
                     });
 
-                    // Skip chunks that only contain headers
-                    if (chunk.length === 1 && isHeader(chunk[0])) {
+                    // Skip chunks that only contain headers, process lists separately
+                    if (chunk.length === 1 && (isHeader(chunk[0]) || isList(chunk[0]))) {
                         console.log('Skipping header-only chunk');
                         continue;
                     }
@@ -240,14 +246,29 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
                         // Replace remaining original paragraphs with simplified versions
                         originalParagraphs.forEach((p, index) => {
-                            const newP = document.createElement('p');
-                            newP.textContent = simplifiedParagraphs[index];
-                            newP.style.backgroundColor = '#f0f8ff';
-                            newP.style.padding = '10px';
-                            newP.style.borderLeft = '3px solid #3498db';
-                            newP.style.margin = '10px 0';
-                            newP.setAttribute('data-original-text', p.textContent);
-                            p.parentNode.replaceChild(newP, p);
+                            let newElement;
+                            if (p.tagName === 'UL' || p.tagName === 'OL' || p.tagName === 'DL') {
+                                // Create the same type of list
+                                newElement = document.createElement(p.tagName);
+                                // Split the simplified text into list items
+                                const items = simplifiedParagraphs[index].split('\n').filter(item => item.trim());
+                                items.forEach(item => {
+                                    const li = document.createElement(p.tagName === 'DL' ? 'dt' : 'li');
+                                    li.textContent = item.replace(/^[•\-*]\s*/, ''); // Remove bullet points if present
+                                    newElement.appendChild(li);
+                                });
+                            } else {
+                                // Handle regular paragraphs
+                                newElement = document.createElement('p');
+                                newElement.textContent = simplifiedParagraphs[index];
+                            }
+                            
+                            newElement.style.backgroundColor = '#f0f8ff';
+                            newElement.style.padding = '10px';
+                            newElement.style.borderLeft = '3px solid #3498db';
+                            newElement.style.margin = '10px 0';
+                            newElement.setAttribute('data-original-text', p.textContent);
+                            p.parentNode.replaceChild(newElement, p);
                             
                             console.log(`Replaced paragraph ${index + 1}/${originalParagraphs.length}:`, {
                                 original: p.textContent.substring(0, 50) + '...',
