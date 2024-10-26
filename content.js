@@ -141,7 +141,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                         
                         // First attempt with original text
                         const stream = await promptSession.promptStreaming(
-                            `Rewrite the following text to make it easier to understand for those with ADHD. Use simple language and short sentences. Keep all proper names, places, and quotes exactly as they are. Preserve paragraph breaks. Keep the same basic structure but make it clearer: "${chunkText}"`
+                            `Rewrite the following text to make it easier to understand for those with ADHD. Use simple English language only and short sentences. Keep all proper names, places, and quotes exactly as they are. Preserve paragraph breaks. Keep the same basic structure but make it clearer. Remember respond in ENGLISH only: "${chunkText}"`
                         );
 
                         let simplifiedText = '';
