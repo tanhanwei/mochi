@@ -443,9 +443,11 @@ function adjustLayout() {
             
             // Get font preference and apply
             chrome.storage.sync.get(['useOpenDyslexic'], function(result) {
-                mainContent.style.fontFamily = result.useOpenDyslexic ? 
+                document.documentElement.style.setProperty('--font-family', 
+                    result.useOpenDyslexic ? 
                     'OpenDyslexic, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif' :
-                    '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif';
+                    '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif'
+                );
             });
             mainContent.style.color = '#2c3e50';
             mainContent.style.backgroundColor = '#ffffff';
