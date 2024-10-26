@@ -21,7 +21,8 @@
   },
   "content_scripts": [{
     "matches": ["<all_urls>"],
-    "js": ["content.js"]
+    "js": ["logger.js", "content.js"],
+    "type": "module"
   }],
   "options_page": "options.html"
 }

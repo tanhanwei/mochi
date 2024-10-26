@@ -1,13 +1,15 @@
+import { logger } from './logger.js';
+
 let summarizer = null;
 let promptSession = null;
 
 // Initialize the AI capabilities
 async function initAICapabilities() {
-    console.log('Starting AI capabilities initialization...');
+    logger.log('Starting AI capabilities initialization...');
     try {
         // Check if AI API is available
         if (!self.ai || !self.ai.languageModel) {
-            console.error('AI API is not available');
+            logger.error('AI API is not available');
             return { summarizer: null, promptSession: null };
         }
 
