@@ -400,7 +400,18 @@ function adjustLayout() {
             mainContent.style.padding = '20px';
             mainContent.style.fontSize = '18px';
             mainContent.style.lineHeight = '1.6';
-            mainContent.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif';
+            // Add OpenDyslexic font from jsDelivr CDN
+            const fontLink = document.createElement('link');
+            fontLink.rel = 'stylesheet';
+            fontLink.href = 'https://cdn.jsdelivr.net/npm/opendyslexic@1.0.0/dist/opendyslexic.min.css';
+            document.head.appendChild(fontLink);
+            
+            // Get font preference and apply
+            chrome.storage.sync.get(['useOpenDyslexic'], function(result) {
+                mainContent.style.fontFamily = result.useOpenDyslexic ? 
+                    'OpenDyslexic, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif' :
+                    '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif';
+            });
             mainContent.style.color = '#2c3e50';
             mainContent.style.backgroundColor = '#ffffff';
 
