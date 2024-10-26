@@ -36,18 +36,18 @@ const logger = {
         };
 
         try {
-            // Store logs in chrome.storage.local
-            await chrome.storage.local.set({
-                [`log_${timestamp}`]: logData
+            // Send logs to background script for storage
+            const response = await chrome.runtime.sendMessage({
+                action: "storeLogs",
+                timestamp: timestamp,
+                logData: logData
             });
             
-            // Keep only last 50 log entries
-            const keys = await chrome.storage.local.get(null);
-            const logKeys = Object.keys(keys).filter(k => k.startsWith('log_')).sort();
-            if (logKeys.length > 50) {
-                const keysToRemove = logKeys.slice(0, logKeys.length - 50);
-                await chrome.storage.local.remove(keysToRemove);
+            if (!response || !response.success) {
+                throw new Error(response?.error || 'Failed to store logs');
             }
+            
+            console.log('Logs stored successfully');
         } catch (error) {
             console.error('Error writing logs:', error);
         } finally {
