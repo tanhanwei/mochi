@@ -216,22 +216,20 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                             simplifiedTexts: simplifiedParagraphs.map(p => p.substring(0, 50) + '...')
                         });
 
-                        // Ensure we have the same number of paragraphs
+                        // Handle paragraph count mismatch
                         if (simplifiedParagraphs.length !== originalParagraphs.length) {
                             console.warn('Mismatch in paragraph counts:', {
                                 original: originalParagraphs.length,
                                 simplified: simplifiedParagraphs.length
                             });
-                            // If we got fewer paragraphs than expected, repeat the last one
-                            while (simplifiedParagraphs.length < originalParagraphs.length) {
-                                simplifiedParagraphs.push(simplifiedParagraphs[simplifiedParagraphs.length - 1] || '');
-                            }
-                            // If we got more paragraphs than expected, combine the excess
+                            
+                            // If we got more simplified paragraphs than original, trim the excess
                             if (simplifiedParagraphs.length > originalParagraphs.length) {
-                                simplifiedParagraphs[originalParagraphs.length - 1] = simplifiedParagraphs
-                                    .slice(originalParagraphs.length - 1)
-                                    .join('\n\n');
                                 simplifiedParagraphs.length = originalParagraphs.length;
+                            }
+                            // If we got fewer simplified paragraphs, remove the corresponding original paragraphs
+                            if (simplifiedParagraphs.length < originalParagraphs.length) {
+                                originalParagraphs.length = simplifiedParagraphs.length;
                             }
                         }
 
