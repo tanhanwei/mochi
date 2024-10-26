@@ -19,23 +19,45 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     document.getElementById('viewLogs').addEventListener('click', async function() {
-        const result = await chrome.storage.local.get(null);
-        const logKeys = Object.keys(result)
-            .filter(k => k.startsWith('log_'))
-            .sort()
-            .reverse();
-        
-        const logContent = document.getElementById('logContent');
-        const logsView = document.getElementById('logsView');
-        
-        if (logKeys.length === 0) {
-            logContent.textContent = 'No logs found';
-        } else {
-            const allLogs = logKeys.map(key => result[key].content).join('\n');
-            logContent.textContent = allLogs;
+        try {
+            console.log('Fetching logs from storage...');
+            const result = await chrome.storage.local.get(null);
+            console.log('Storage contents:', result);
+            
+            const logKeys = Object.keys(result)
+                .filter(k => k.startsWith('log_'))
+                .sort()
+                .reverse();
+            
+            console.log('Found log keys:', logKeys);
+            
+            const logContent = document.getElementById('logContent');
+            const logsView = document.getElementById('logsView');
+            
+            if (logKeys.length === 0) {
+                logContent.textContent = 'No logs found';
+                console.log('No logs found in storage');
+            } else {
+                const allLogs = logKeys.map(key => {
+                    const entry = result[key];
+                    console.log('Processing log entry:', { key, entry });
+                    return entry.content || 'Invalid log entry';
+                }).join('\n');
+                
+                logContent.textContent = allLogs;
+                console.log('Displayed logs:', {
+                    numberOfEntries: logKeys.length,
+                    totalLength: allLogs.length
+                });
+            }
+            
+            logsView.style.display = 'block';
+        } catch (error) {
+            console.error('Error viewing logs:', error);
+            const logContent = document.getElementById('logContent');
+            logContent.textContent = `Error viewing logs: ${error.message}`;
+            document.getElementById('logsView').style.display = 'block';
         }
-        
-        logsView.style.display = 'block';
     });
 
     document.getElementById('closeLogs').addEventListener('click', function() {

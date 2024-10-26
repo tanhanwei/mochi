@@ -36,6 +36,12 @@ const logger = {
         };
 
         try {
+            console.log('Attempting to store logs:', {
+                timestamp,
+                logLength: logText.length,
+                entries: this.logs.length
+            });
+
             // Send logs to background script for storage
             const response = await chrome.runtime.sendMessage({
                 action: "storeLogs",
@@ -47,7 +53,10 @@ const logger = {
                 throw new Error(response?.error || 'Failed to store logs');
             }
             
-            console.log('Logs stored successfully');
+            console.log('Logs stored successfully:', {
+                response,
+                timestamp
+            });
         } catch (error) {
             console.error('Error writing logs:', error);
         } finally {

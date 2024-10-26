@@ -5,20 +5,40 @@ chrome.runtime.onInstalled.addListener(() => {
 // Handle log storage requests from content scripts
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "storeLogs") {
+    console.log('Received log storage request:', {
+      timestamp: request.timestamp,
+      logData: request.logData
+    });
+
     (async () => {
       try {
+        const key = `log_${request.timestamp}`;
         await chrome.storage.local.set({
-          [`log_${request.timestamp}`]: request.logData
+          [key]: request.logData
+        });
+        
+        // Verify storage
+        const stored = await chrome.storage.local.get(key);
+        console.log('Verified stored log:', {
+          key,
+          stored: stored[key]
         });
         
         // Cleanup old logs
         const keys = await chrome.storage.local.get(null);
         const logKeys = Object.keys(keys).filter(k => k.startsWith('log_')).sort();
+        console.log('Current log keys:', logKeys);
+        
         if (logKeys.length > 50) {
           const keysToRemove = logKeys.slice(0, logKeys.length - 50);
           await chrome.storage.local.remove(keysToRemove);
+          console.log('Cleaned up old logs:', {
+            removed: keysToRemove.length,
+            remaining: logKeys.length - keysToRemove.length
+          });
         }
-        sendResponse({success: true});
+        
+        sendResponse({success: true, key});
       } catch (error) {
         console.error('Error storing logs:', error);
         sendResponse({success: false, error: error.message});
