@@ -22,7 +22,8 @@
   },
   "content_scripts": [{
     "matches": ["<all_urls>"],
-    "js": ["marked.js", "logger.js", "content.js"]
+    "js": ["marked.js", "logger.js", "content.js"],
+    "run_at": "document_end"
   }],
   "options_page": "options.html"
 }

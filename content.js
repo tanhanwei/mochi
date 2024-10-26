@@ -276,7 +276,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                                 // Handle regular paragraphs
                                 newElement = document.createElement('p');
                                 // Use marked to parse markdown
-                                newElement.innerHTML = marked.parse(simplifiedParagraphs[index], {
+                                newElement.innerHTML = window.marked.parse(simplifiedParagraphs[index], {
                                     breaks: true,
                                     gfm: true
                                 });
