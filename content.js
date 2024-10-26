@@ -536,9 +536,30 @@ function adjustLayout() {
             // Log before style injection
             console.log('Attempting to inject font styles...');
             
+            // Get original font family before changes
+            const originalFont = window.getComputedStyle(document.body).fontFamily;
+            console.log('Original font family:', originalFont);
+            
             // Ensure the style is inserted at the end of head
             document.head.appendChild(fontStyle);
             console.log('Font styles injected into head');
+
+            // Verify font loading
+            document.fonts.ready.then(() => {
+                console.log('Available fonts:', Array.from(document.fonts).map(f => f.family));
+                console.log('OpenDyslexic loaded:', document.fonts.check('12px OpenDyslexic'));
+                
+                // Check if font was actually applied
+                const newFont = window.getComputedStyle(document.body).fontFamily;
+                console.log('New font family:', newFont);
+                
+                // Check specific elements
+                const elements = document.querySelectorAll('p, h1, h2, h3, div');
+                elements.forEach(el => {
+                    const computedFont = window.getComputedStyle(el).fontFamily;
+                    console.log(`Font for ${el.tagName}:`, computedFont);
+                });
+            });
             
             // Also inject into shadow DOM roots if they exist
             const shadowRoots = document.querySelectorAll('*');
