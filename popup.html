@@ -11,9 +11,12 @@
             <button id="simplifyText">Simplify Text</button>
             <button id="summarize">Summarize</button>
             <button id="adjustLayout">Adjust Layout</button>
+            <button id="viewLogs">View Logs</button>
         </div>
-        <div class="settings">
-            <button id="openOptions">Settings</button>
+        <div id="logsView" style="display:none">
+            <pre id="logContent" style="max-height: 300px; overflow-y: auto; background: #f5f5f5; padding: 10px; margin-top: 10px;"></pre>
+            <button id="closeLogs">Close Logs</button>
+            <button id="downloadLogs">Download Logs</button>
         </div>
     </div>
     <script src="popup.js"></script>

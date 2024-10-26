@@ -38,10 +38,28 @@ button:hover {
     background-color: #2980b9;
 }
 
-#openOptions {
-    background-color: #95a5a6;
+#viewLogs {
+    background-color: #27ae60;
 }
 
-#openOptions:hover {
+#viewLogs:hover {
+    background-color: #219a52;
+}
+
+#closeLogs {
+    background-color: #95a5a6;
+    margin-top: 10px;
+}
+
+#closeLogs:hover {
     background-color: #7f8c8d;
+}
+
+#downloadLogs {
+    background-color: #3498db;
+    margin-top: 10px;
+}
+
+#downloadLogs:hover {
+    background-color: #2980b9;
 }
