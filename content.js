@@ -453,38 +453,67 @@ function adjustLayout() {
             console.log('Font face style added to document head');
             
             // Apply the font to the main content
-            // Apply strongest possible font override
+            // Apply most aggressive font override possible
             const fontStyle = document.createElement('style');
             fontStyle.textContent = `
-                /* Target specific news sites */
-                article, 
-                .article-content,
-                .article-body,
-                .article__content,
-                .article__body,
-                .content-body,
-                .story-body,
-                [class*="article"],
-                [class*="content"],
-                [class*="story"] {
-                    font-family: 'OpenDyslexic', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif !important;
-                }
+                @layer override {
+                    /* Global override */
+                    :root {
+                        --main-font: 'OpenDyslexic', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif !important;
+                    }
 
-                /* Override all text elements */
-                ${mainContent.tagName.toLowerCase()},
-                ${mainContent.tagName.toLowerCase()} *,
-                ${mainContent.tagName.toLowerCase()} p,
-                ${mainContent.tagName.toLowerCase()} div,
-                ${mainContent.tagName.toLowerCase()} span,
-                ${mainContent.tagName.toLowerCase()} li {
-                    font-family: 'OpenDyslexic', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif !important;
-                    -webkit-font-family: 'OpenDyslexic', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif !important;
-                }
+                    /* Force font on absolutely everything */
+                    *, 
+                    *::before, 
+                    *::after,
+                    :not(i):not(pre):not(code):not(.fa):not(.material-icons) {
+                        font-family: var(--main-font) !important;
+                        -webkit-font-family: var(--main-font) !important;
+                        -moz-font-family: var(--main-font) !important;
+                    }
 
-                /* Force override any dynamic styles */
-                @layer {
-                    ${mainContent.tagName.toLowerCase()} * {
-                        font-family: 'OpenDyslexic', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif !important;
+                    /* Target specific news sites and common content areas */
+                    article, 
+                    .article-content,
+                    .article-body,
+                    [class*="article"],
+                    [class*="content"],
+                    [class*="story"],
+                    [class*="text"],
+                    [class*="body"],
+                    [class*="main"],
+                    main,
+                    article,
+                    section,
+                    p,
+                    div,
+                    span,
+                    h1, h2, h3, h4, h5, h6,
+                    li,
+                    td,
+                    th,
+                    dt,
+                    dd,
+                    label,
+                    input[type="text"],
+                    textarea {
+                        font-family: var(--main-font) !important;
+                        -webkit-font-family: var(--main-font) !important;
+                        -moz-font-family: var(--main-font) !important;
+                    }
+
+                    /* Target shadow DOM elements */
+                    :host, :host * {
+                        font-family: var(--main-font) !important;
+                        -webkit-font-family: var(--main-font) !important;
+                        -moz-font-family: var(--main-font) !important;
+                    }
+
+                    /* Override web components */
+                    :defined {
+                        font-family: var(--main-font) !important;
+                        -webkit-font-family: var(--main-font) !important;
+                        -moz-font-family: var(--main-font) !important;
                     }
                 }
             `;
