@@ -30,6 +30,17 @@ document.addEventListener('DOMContentLoaded', function() {
                 .reverse();
             
             console.log('Found log keys:', logKeys);
+
+            // Debug log storage state
+            for (const key of logKeys) {
+                const entry = result[key];
+                console.log('Log entry:', {
+                    key,
+                    hasContent: !!entry?.content,
+                    contentLength: entry?.content?.length,
+                    timestamp: entry?.timestamp
+                });
+            }
             
             const logContent = document.getElementById('logContent');
             const logsView = document.getElementById('logsView');

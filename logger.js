@@ -30,6 +30,7 @@ const logger = {
 
         const logText = this.logs.join('\n') + '\n';
         const timestamp = new Date().toISOString().slice(0,19).replace(/:/g,'-');
+        const key = `log_${timestamp}`;
         const logData = {
             timestamp: timestamp,
             content: logText
@@ -37,6 +38,7 @@ const logger = {
 
         try {
             console.log('Attempting to store logs:', {
+                key,
                 timestamp,
                 logLength: logText.length,
                 entries: this.logs.length
@@ -45,15 +47,18 @@ const logger = {
             // Send logs to background script for storage
             const response = await chrome.runtime.sendMessage({
                 action: "storeLogs",
+                key: key,
                 timestamp: timestamp,
                 logData: logData
             });
             
             if (!response || !response.success) {
+                console.error('Failed to store logs:', response?.error || 'No response');
                 throw new Error(response?.error || 'Failed to store logs');
             }
             
             console.log('Logs stored successfully:', {
+                key,
                 response,
                 timestamp
             });

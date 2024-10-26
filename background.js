@@ -12,10 +12,17 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
     (async () => {
       try {
-        const key = `log_${request.timestamp}`;
-        await chrome.storage.local.set({
+        const key = request.key || `log_${request.timestamp}`;
+        const data = {
           [key]: request.logData
+        };
+        
+        console.log('Storing log data:', {
+          key,
+          data: request.logData
         });
+
+        await chrome.storage.local.set(data);
         
         // Verify storage
         const stored = await chrome.storage.local.get(key);
@@ -23,10 +30,17 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
           key,
           stored: stored[key]
         });
+
+        if (!stored[key]) {
+          throw new Error('Failed to verify log storage');
+        }
         
         // Cleanup old logs
-        const keys = await chrome.storage.local.get(null);
-        const logKeys = Object.keys(keys).filter(k => k.startsWith('log_')).sort();
+        const allData = await chrome.storage.local.get(null);
+        const logKeys = Object.keys(allData)
+          .filter(k => k.startsWith('log_'))
+          .sort();
+        
         console.log('Current log keys:', logKeys);
         
         if (logKeys.length > 50) {
