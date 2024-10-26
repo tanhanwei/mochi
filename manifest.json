@@ -23,7 +23,7 @@
   "content_scripts": [{
     "matches": ["<all_urls>"],
     "js": ["marked.js", "logger.js", "content.js"],
-    "css": ["content.css", "fonts.css"],
+    "css": ["content.css", "styles/fonts.css"],
     "run_at": "document_idle"
   }],
   "options_page": "options.html"
