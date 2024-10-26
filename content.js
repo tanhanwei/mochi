@@ -1,55 +1,36 @@
 let summarizer = null;
-let promptAPI = null;
+let promptSession = null;
 
 // Initialize the AI capabilities
 async function initAICapabilities() {
-  console.log('Starting AI capabilities initialization...');
-  try {
-    // Check if AI API is available
-    if (typeof ai === 'undefined') {
-      console.error('AI API is not defined');
-      return { summarizer: null, promptAPI: null };
-    }
-
-    // Initialize summarizer
-    if (ai.summarizer) {
-      console.log('Creating summarizer...');
-      summarizer = await ai.summarizer.create();
-      console.log('Waiting for summarizer to be ready...');
-      await summarizer.ready;
-      console.log('Summarizer initialized successfully');
-    } else {
-      console.warn('Summarizer API not available in ai object:', ai);
-    }
-    
-    // Initialize Prompt API
-    if (ai.languageModel) {
-      try {
-        console.log('Creating Language Model instance for text simplification...');
-        promptAPI = await ai.languageModel.create();
-        if (!promptAPI) {
-          throw new Error('Language Model creation failed - returned null');
+    console.log('Starting AI capabilities initialization...');
+    try {
+        // Check if AI API is available
+        if (!self.ai || !self.ai.languageModel) {
+            console.error('AI API is not available');
+            return { summarizer: null, promptSession: null };
         }
-        console.log('Waiting for Language Model to be ready...');
-        await promptAPI.ready;
-        console.log('Language Model initialized successfully for text simplification');
-      } catch (error) {
-        console.error('Failed to initialize Language Model:', error);
-        promptAPI = null;
-      }
-    } else {
-      console.warn('Language Model not available in ai object:', ai);
-    }
 
-    console.log('AI capabilities initialization complete:', {
-      summarizerAvailable: !!summarizer,
-      promptAPIAvailable: !!promptAPI
-    });
-    return { summarizer, promptAPI };
-  } catch (error) {
-    console.error('Error initializing AI capabilities:', error);
-    throw error;
-  }
+        // Initialize summarizer
+        if (self.ai.summarizer) {
+            console.log('Creating summarizer...');
+            summarizer = await self.ai.summarizer.create();
+            console.log('Summarizer initialized successfully');
+        }
+
+        // Initialize Prompt API
+        const { defaultTemperature, defaultTopK } = await self.ai.languageModel.capabilities();
+        promptSession = await self.ai.languageModel.create({
+            temperature: defaultTemperature,
+            topK: defaultTopK
+        });
+        console.log('Language Model initialized successfully');
+
+        return { summarizer, promptSession };
+    } catch (error) {
+        console.error('Error initializing AI capabilities:', error);
+        throw error;
+    }
 }
 
 // Listen for messages from popup
@@ -61,10 +42,11 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             case "simplify":
                 try {
                     await ensureInitialized();
-                if (!promptAPI) {
-                    console.error('Prompt API not available - cannot simplify text');
-                    return;
-                }
+                    if (!promptSession) {
+                        console.error('Prompt API not available - cannot simplify text');
+                        sendResponse({success: false, error: 'Prompt API not available'});
+                        return;
+                    }
                 
                 console.log('Finding main content element...');
                 
@@ -159,13 +141,13 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                         
                         let simplifiedText;
                         // First attempt with original text
-                        try {
-                            simplifiedText = await promptAPI.prompt(
-                                `Rewrite the following English language text to make it easier to understand for those with ADHD. Use simple language and short sentences. Keep all proper names, places, and quotes exactly as they are. Preserve paragraph breaks. Keep the same basic structure but make it clearer: "${chunkText}"`
-                            );
-                        } catch (error) {
-                            console.error('Error during simplification:', error);
-                            throw error;
+                        const stream = await promptSession.promptStreaming(
+                            `Rewrite the following text to make it easier to understand for those with ADHD. Use simple language and short sentences. Keep all proper names, places, and quotes exactly as they are. Preserve paragraph breaks. Keep the same basic structure but make it clearer: "${chunkText}"`
+                        );
+
+                        let simplifiedText = '';
+                        for await (const chunk of stream) {
+                            simplifiedText = chunk.trim();
                         }
 
                         if (!simplifiedText || simplifiedText.trim().length === 0) {
