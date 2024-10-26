@@ -452,8 +452,8 @@ function adjustLayout() {
             document.head.appendChild(style);
             console.log('Font face style added to document head');
             
-            // Apply the font to the main content
-            // Apply most aggressive font override possible
+            // Apply the font to the main content with logging
+            console.log('Starting font application...');
             const fontStyle = document.createElement('style');
             fontStyle.textContent = `
                 @layer override {
@@ -467,6 +467,21 @@ function adjustLayout() {
                     *::before, 
                     *::after,
                     :not(i):not(pre):not(code):not(.fa):not(.material-icons) {
+                        font-family: var(--main-font) !important;
+                        -webkit-font-family: var(--main-font) !important;
+                        -moz-font-family: var(--main-font) !important;
+                    }
+
+                    /* Target specific CNA elements */
+                    .article-content,
+                    .article-body,
+                    .article-text,
+                    .article p,
+                    .article div,
+                    .article span,
+                    [class*="article"],
+                    [class*="content"],
+                    [class*="text"] {
                         font-family: var(--main-font) !important;
                         -webkit-font-family: var(--main-font) !important;
                         -moz-font-family: var(--main-font) !important;
@@ -518,17 +533,46 @@ function adjustLayout() {
                 }
             `;
             
+            // Log before style injection
+            console.log('Attempting to inject font styles...');
+            
             // Ensure the style is inserted at the end of head
             document.head.appendChild(fontStyle);
+            console.log('Font styles injected into head');
             
             // Also inject into shadow DOM roots if they exist
             const shadowRoots = document.querySelectorAll('*');
+            let shadowRootCount = 0;
             shadowRoots.forEach(element => {
                 if (element.shadowRoot) {
                     element.shadowRoot.appendChild(fontStyle.cloneNode(true));
+                    shadowRootCount++;
                 }
             });
+            console.log(`Injected styles into ${shadowRootCount} shadow roots`);
+
+            // Add mutation observer to handle dynamically loaded content
+            const observer = new MutationObserver((mutations) => {
+                mutations.forEach((mutation) => {
+                    if (mutation.addedNodes.length) {
+                        console.log('New content detected, reapplying font styles');
+                        mutation.addedNodes.forEach(node => {
+                            if (node.nodeType === 1) { // Element node
+                                node.style.fontFamily = 'var(--main-font)';
+                            }
+                        });
+                    }
+                });
+            });
+
+            observer.observe(document.body, {
+                childList: true,
+                subtree: true
+            });
+
+            // Verify font application
             console.log('Font family applied to main content:', mainContent.style.fontFamily);
+            console.log('Computed font family:', window.getComputedStyle(mainContent).fontFamily);
             
             // Verify font loading
             document.fonts.ready.then(() => {
