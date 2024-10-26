@@ -1,31 +1,29 @@
 // Create a logging utility
-class Logger {
-    constructor() {
-        this.logs = [];
-        this.lastWrite = Date.now();
-        this.writeInterval = 5000; // Write every 5 seconds
-    }
+const logger = {
+    logs: [],
+    lastWrite: Date.now(),
+    writeInterval: 5000, // Write every 5 seconds
 
     log(...args) {
         const timestamp = new Date().toISOString();
         const logEntry = `${timestamp}: ${args.join(' ')}`;
         this.logs.push(logEntry);
         this._scheduleWrite();
-    }
+    },
 
     error(...args) {
         const timestamp = new Date().toISOString();
         const logEntry = `${timestamp} ERROR: ${args.join(' ')}`;
         this.logs.push(logEntry);
         this._scheduleWrite();
-    }
+    },
 
     _scheduleWrite() {
         const now = Date.now();
         if (now - this.lastWrite >= this.writeInterval) {
             this._writeLogs();
         }
-    }
+    },
 
     async _writeLogs() {
         if (this.logs.length === 0) return;
@@ -52,7 +50,4 @@ class Logger {
             this.lastWrite = Date.now();
         }
     }
-}
-
-// Export singleton instance
-export const logger = new Logger();
+};

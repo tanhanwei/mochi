@@ -1,5 +1,3 @@
-import { logger } from './logger.js';
-
 let summarizer = null;
 let promptSession = null;
 
