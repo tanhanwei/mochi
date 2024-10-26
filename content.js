@@ -275,13 +275,44 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                             } else {
                                 // Handle regular paragraphs
                                 newElement = document.createElement('p');
-                                newElement.textContent = simplifiedParagraphs[index];
+                                // Use marked to parse markdown
+                                newElement.innerHTML = marked.parse(simplifiedParagraphs[index], {
+                                    breaks: true,
+                                    gfm: true
+                                });
                             }
                             
                             newElement.style.backgroundColor = '#f0f8ff';
                             newElement.style.padding = '10px';
                             newElement.style.borderLeft = '3px solid #3498db';
                             newElement.style.margin = '10px 0';
+            
+                            // Add styles for markdown elements
+                            const markdownStyles = document.createElement('style');
+                            markdownStyles.textContent = `
+                                .simplified-text ul, .simplified-text ol {
+                                    margin-left: 20px;
+                                }
+                                .simplified-text strong {
+                                    font-weight: bold;
+                                }
+                                .simplified-text em {
+                                    font-style: italic;
+                                }
+                                .simplified-text code {
+                                    background: #f8f8f8;
+                                    padding: 2px 4px;
+                                    border-radius: 3px;
+                                }
+                                .simplified-text blockquote {
+                                    border-left: 3px solid #ddd;
+                                    margin-left: 0;
+                                    padding-left: 10px;
+                                    color: #666;
+                                }
+                            `;
+                            document.head.appendChild(markdownStyles);
+                            newElement.classList.add('simplified-text');
                             newElement.setAttribute('data-original-text', p.textContent);
                             p.parentNode.replaceChild(newElement, p);
                             
