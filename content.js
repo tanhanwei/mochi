@@ -205,22 +205,51 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                             continue;
                         }
 
-                        // Split simplified text back into paragraphs
+                        // Split simplified text back into paragraphs and ensure we have the right number
                         const simplifiedParagraphs = simplifiedText.split('\n\n');
                         const originalParagraphs = chunk.filter(el => !isHeader(el));
 
+                        console.log('Paragraph replacement:', {
+                            originalCount: originalParagraphs.length,
+                            simplifiedCount: simplifiedParagraphs.length,
+                            originalTexts: originalParagraphs.map(p => p.textContent.substring(0, 50) + '...'),
+                            simplifiedTexts: simplifiedParagraphs.map(p => p.substring(0, 50) + '...')
+                        });
+
+                        // Ensure we have the same number of paragraphs
+                        if (simplifiedParagraphs.length !== originalParagraphs.length) {
+                            console.warn('Mismatch in paragraph counts:', {
+                                original: originalParagraphs.length,
+                                simplified: simplifiedParagraphs.length
+                            });
+                            // If we got fewer paragraphs than expected, repeat the last one
+                            while (simplifiedParagraphs.length < originalParagraphs.length) {
+                                simplifiedParagraphs.push(simplifiedParagraphs[simplifiedParagraphs.length - 1] || '');
+                            }
+                            // If we got more paragraphs than expected, combine the excess
+                            if (simplifiedParagraphs.length > originalParagraphs.length) {
+                                simplifiedParagraphs[originalParagraphs.length - 1] = simplifiedParagraphs
+                                    .slice(originalParagraphs.length - 1)
+                                    .join('\n\n');
+                                simplifiedParagraphs.length = originalParagraphs.length;
+                            }
+                        }
+
                         // Replace each original paragraph with its simplified version
                         originalParagraphs.forEach((p, index) => {
-                            if (index < simplifiedParagraphs.length) {
-                                const newP = document.createElement('p');
-                                newP.textContent = simplifiedParagraphs[index];
-                                newP.style.backgroundColor = '#f0f8ff';
-                                newP.style.padding = '10px';
-                                newP.style.borderLeft = '3px solid #3498db';
-                                newP.style.margin = '10px 0';
-                                newP.setAttribute('data-original-text', p.textContent);
-                                p.parentNode.replaceChild(newP, p);
-                            }
+                            const newP = document.createElement('p');
+                            newP.textContent = simplifiedParagraphs[index];
+                            newP.style.backgroundColor = '#f0f8ff';
+                            newP.style.padding = '10px';
+                            newP.style.borderLeft = '3px solid #3498db';
+                            newP.style.margin = '10px 0';
+                            newP.setAttribute('data-original-text', p.textContent);
+                            p.parentNode.replaceChild(newP, p);
+                            
+                            console.log(`Replaced paragraph ${index + 1}/${originalParagraphs.length}:`, {
+                                original: p.textContent.substring(0, 50) + '...',
+                                simplified: newP.textContent.substring(0, 50) + '...'
+                            });
                         });
                             console.log('Successfully replaced paragraph with simplified version');
                         } catch (error) {
