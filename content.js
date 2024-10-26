@@ -18,11 +18,12 @@ async function initAICapabilities() {
             console.log('Summarizer initialized successfully');
         }
 
-        // Initialize Prompt API
+        // Initialize Prompt API with systemPrompt
         const { defaultTemperature, defaultTopK } = await self.ai.languageModel.capabilities();
         promptSession = await self.ai.languageModel.create({
             temperature: defaultTemperature,
-            topK: defaultTopK
+            topK: defaultTopK,
+            systemPrompt: `You are a helpful assistant that rewrites text to make it easier to understand for those with ADHD. You use simple language and short sentences. You keep all proper names, places, and quotes exactly as they are. You preserve paragraph breaks. You keep the same basic structure but make it clearer.`
         });
         console.log('Language Model initialized successfully');
 
@@ -140,9 +141,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                         console.log('Attempting to simplify chunk:', chunkText.substring(0, 50) + '...');
                         
                         // First attempt with original text
-                        const stream = await promptSession.promptStreaming(
-                            `Rewrite the following text to make it easier to understand for those with ADHD. Use simple English language only and short sentences. Keep all proper names, places, and quotes exactly as they are. Preserve paragraph breaks. Keep the same basic structure but make it clearer. Remember respond in ENGLISH only: "${chunkText}"`
-                        );
+                        // Send only the chunkText as the prompt
+                        const stream = await promptSession.promptStreaming(chunkText);
 
                         let simplifiedText = '';
                         for await (const chunk of stream) {
