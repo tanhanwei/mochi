@@ -282,9 +282,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                                         gfm: true
                                     }) : 
                                     simplifiedParagraphs[index];
-                                    breaks: true,
-                                    gfm: true
-                                });
                             }
                             
                             newElement.style.backgroundColor = '#f0f8ff';
@@ -326,8 +323,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                                 simplified: newElement.textContent.substring(0, 50) + '...'
                             });
                         });
-                            console.log('Successfully replaced paragraph with simplified version');
-                        } catch (error) {
+                        console.log('Successfully replaced paragraph with simplified version');
+                    } catch (error) {
                             console.error('Error simplifying paragraph:', error, {
                                 text: chunkText.substring(0, 100) + '...'
                             });
