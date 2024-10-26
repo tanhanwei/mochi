@@ -141,6 +141,13 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                         console.log('Attempting to simplify chunk:', chunkText.substring(0, 50) + '...');
                         
                         // First attempt with original text
+                        // Log the exact prompt being sent
+                        console.log('Sending prompt to API:', {
+                            text: chunkText,
+                            length: chunkText.length,
+                            wordCount: chunkText.split(/\s+/).length
+                        });
+                        
                         // Send only the chunkText as the prompt
                         const stream = await promptSession.promptStreaming(chunkText);
 
