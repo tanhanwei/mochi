@@ -163,81 +163,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                             simplifiedText = await promptAPI.prompt(
                                 `Rewrite the following English language text to make it easier to understand for those with ADHD. Use simple language and short sentences. Keep all proper names, places, and quotes exactly as they are. Preserve paragraph breaks. Keep the same basic structure but make it clearer: "${chunkText}"`
                             );
-                        } catch (err) {
-                            if (err.name === 'NotSupportedError' && err.message.includes('untested language')) {
-                                console.log('Detected non-English content, attempting to identify problematic words...');
-                                
-                                // Try to identify non-English words
-                                try {
-                                    // Use dictionary-based analysis instead of API
-                                    const { nonEnglishWords, properNames } = analyzeText(chunkText);
-                                    const wordsToReplace = [...new Set([...nonEnglishWords, ...properNames])];
-                                    console.log('Identified foreign/proper names:', nonEnglishWords);
-                                    
-                                    // Replace identified words with quoted placeholders
-                                    let modifiedText = chunkText;
-                                    const replacements = new Map();
-                                    
-                                    nonEnglishWords.forEach((word, index) => {
-                                        if (word && modifiedText.includes(word)) {
-                                            // Use quoted single letters as placeholders
-                                            const placeholder = `"${String.fromCharCode(65 + index)}"`; // "A", "B", "C", etc.
-                                            replacements.set(placeholder, word);
-                                            // Escape special characters in word for RegExp
-                                            const escapedWord = word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-                                            modifiedText = modifiedText.replace(new RegExp(escapedWord, 'g'), placeholder);
-                                            
-                                            // Debug log for each replacement
-                                            console.log(`Word replacement: "${word}" -> ${placeholder}`);
-                                        }
-                                    });
-                                    
-                                    // Debug log final replacements map
-                                    console.log('Replacements map:', Object.fromEntries(replacements));
-                                    
-                                    // Try simplification with replaced text, using a more specific prompt
-                                    try {
-                                        const attempts = 3;
-                                        for (let i = 0; i < attempts; i++) {
-                                            try {
-                                                simplifiedText = await promptAPI.prompt(
-                                                    `Your task is to simplify this English text while keeping all [NAME#] placeholders unchanged:
-                                                    1. Use basic English words and short sentences
-                                                    2. Break complex ideas into simple parts
-                                                    3. Keep paragraph structure
-                                                    4. Do NOT change any [NAME#] placeholders
-                                                    5. Do NOT add any explanations
-                                                    
-                                                    Text to simplify: "${modifiedText}"`
-                                                );
-                                                break; // Success - exit loop
-                                            } catch (retryError) {
-                                                if (i === attempts - 1) throw retryError; // Last attempt failed
-                                                await new Promise(resolve => setTimeout(resolve, 1000 * (i + 1))); // Exponential backoff
-                                            }
-                                        }
-                                        
-                                        // Restore original names with debugging
-                                        console.log('Simplified text before restoration:', simplifiedText);
-                                        replacements.forEach((original, placeholder) => {
-                                            const regex = new RegExp(placeholder.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g');
-                                            const matches = simplifiedText.match(regex);
-                                            console.log(`Restoring: ${placeholder} -> "${original}" (matches: ${matches ? matches.length : 0})`);
-                                            simplifiedText = simplifiedText.replace(regex, original);
-                                        });
-                                        console.log('Final simplified text:', simplifiedText);
-                                        
-                                    } catch (error) {
-                                        console.error('Failed to simplify even with replacements:', error);
-                                        throw error;
-                                    }
-                                } catch (error) {
-                                    console.error('Failed to analyze non-English content:', error);
-                                    throw error;
-                                }
-                            } else {
-                                throw err; // Re-throw other errors
-                            }
+                        } catch (error) {
+                            console.error('Error during simplification:', error);
+                            throw error;
                         }
 
                         if (!simplifiedText || simplifiedText.trim().length === 0) {
