@@ -24,7 +24,11 @@
     "matches": ["<all_urls>"],
     "js": ["marked.js", "logger.js", "content.js"],
     "css": ["content.css", "fonts.css"],
-    "run_at": "document_idle"
+    "run_at": "document_start"
+  }],
+  "web_accessible_resources": [{
+    "resources": ["fonts/*"],
+    "matches": ["<all_urls>"]
   }],
   "options_page": "options.html"
 }

@@ -1,12 +1,26 @@
-/* Global font override */
-:root {
+/* Reset all font-family declarations */
+* {
+    font-family: initial !important;
+}
+
+/* Global font override with higher specificity */
+:root,
+:root * {
     --main-font: 'OpenDyslexic', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif !important;
 }
 
-/* Force font on all elements */
-*, 
-*::before, 
-*::after {
+/* Force font on all elements with maximum specificity */
+html body *:not(i):not(.fa):not(.material-icons):not(pre code):not(code):not(pre):not(script):not(style),
+html body *:not(i):not(.fa):not(.material-icons):not(pre code):not(code):not(pre):not(script):not(style)::before,
+html body *:not(i):not(.fa):not(.material-icons):not(pre code):not(code):not(pre):not(script):not(style)::after {
+    font-family: var(--main-font) !important;
+    -webkit-font-family: var(--main-font) !important;
+    -moz-font-family: var(--main-font) !important;
+}
+
+/* Additional override for shadow DOM elements */
+:host,
+:host * {
     font-family: var(--main-font) !important;
     -webkit-font-family: var(--main-font) !important;
     -moz-font-family: var(--main-font) !important;

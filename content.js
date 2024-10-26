@@ -596,5 +596,26 @@ function ensureInitialized() {
     return initializationPromise;
 }
 
-// Initialize on load
+// Preload fonts
+function preloadFonts() {
+    const fontFiles = [
+        'OpenDyslexic-Regular.otf',
+        'OpenDyslexic-Bold.otf',
+        'OpenDyslexic-Italic.otf',
+        'OpenDyslexic-Bold-Italic.otf'
+    ];
+
+    fontFiles.forEach(file => {
+        const link = document.createElement('link');
+        link.href = chrome.runtime.getURL(`fonts/${file}`);
+        link.rel = 'preload';
+        link.as = 'font';
+        link.type = 'font/otf';
+        link.crossOrigin = 'anonymous';
+        document.head.appendChild(link);
+    });
+}
+
+// Initialize
+preloadFonts();
 ensureInitialized();
