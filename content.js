@@ -141,8 +141,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                         isHeaderOnly: chunk.length === 1 && isHeader(chunk[0])
                     });
 
-                    // Skip chunks that only contain headers, process lists separately
-                    if (chunk.length === 1 && (isHeader(chunk[0]) || isList(chunk[0]))) {
+                    // Skip chunks that only contain headers
+                    if (chunk.length === 1 && isHeader(chunk[0])) {
                         console.log('Skipping header-only chunk');
                         continue;
                     }
@@ -247,14 +247,29 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                         // Replace remaining original paragraphs with simplified versions
                         originalParagraphs.forEach((p, index) => {
                             let newElement;
-                            if (p.tagName === 'UL' || p.tagName === 'OL' || p.tagName === 'DL') {
+                            if (isList(p)) {
                                 // Create the same type of list
                                 newElement = document.createElement(p.tagName);
+                                
+                                // Get original list items for comparison
+                                const originalItems = Array.from(p.children);
+                                
                                 // Split the simplified text into list items
                                 const items = simplifiedParagraphs[index].split('\n').filter(item => item.trim());
-                                items.forEach(item => {
+                                
+                                // Create new list items
+                                items.forEach((item, idx) => {
                                     const li = document.createElement(p.tagName === 'DL' ? 'dt' : 'li');
                                     li.textContent = item.replace(/^[•\-*]\s*/, ''); // Remove bullet points if present
+                                    
+                                    // Preserve any nested lists from original
+                                    if (originalItems[idx]) {
+                                        const nestedLists = originalItems[idx].querySelectorAll('ul, ol, dl');
+                                        nestedLists.forEach(nested => {
+                                            li.appendChild(nested.cloneNode(true));
+                                        });
+                                    }
+                                    
                                     newElement.appendChild(li);
                                 });
                             } else {
