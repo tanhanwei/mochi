@@ -453,7 +453,17 @@ function adjustLayout() {
             console.log('Font face style added to document head');
             
             // Apply the font to the main content
-            mainContent.style.fontFamily = 'OpenDyslexic, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif';
+            // Apply stronger font override
+            const fontStyle = document.createElement('style');
+            fontStyle.textContent = `
+                ${mainContent.tagName.toLowerCase()} {
+                    font-family: 'OpenDyslexic', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif !important;
+                }
+                ${mainContent.tagName.toLowerCase()} * {
+                    font-family: inherit !important;
+                }
+            `;
+            document.head.appendChild(fontStyle);
             console.log('Font family applied to main content:', mainContent.style.fontFamily);
             
             // Verify font loading
