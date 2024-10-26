@@ -23,7 +23,7 @@
   "content_scripts": [{
     "matches": ["<all_urls>"],
     "js": ["marked.js", "logger.js", "content.js"],
-    "css": ["content.css", "fonts.css"],
+    "css": ["content.css", "fonts.css", "chrome-extension://__MSG_@@extension_id__/fonts/OpenDyslexic-Regular.otf"],
     "run_at": "document_idle"
   }],
   "options_page": "options.html"
