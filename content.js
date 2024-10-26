@@ -452,8 +452,31 @@ function adjustLayout() {
             document.head.appendChild(style);
             console.log('Font face style added to document head');
             
+            // Log original font family before changes
+            const originalFont = window.getComputedStyle(document.body).fontFamily;
+            console.log('Original body font-family:', originalFont);
+            
             // Apply the font to the main content with logging
             console.log('Starting font application...');
+            
+            // Verify font loading
+            document.fonts.ready.then(() => {
+                console.log('Available fonts:', Array.from(document.fonts).map(f => f.family));
+                console.log('OpenDyslexic loaded:', document.fonts.check('12px OpenDyslexic'));
+                
+                // Sample some elements to verify font application
+                const elements = ['body', 'p', 'h1', 'h2', 'div'].map(selector => ({
+                    selector,
+                    element: document.querySelector(selector),
+                    computedFont: document.querySelector(selector) ? 
+                        window.getComputedStyle(document.querySelector(selector)).fontFamily : 
+                        'element not found'
+                }));
+                
+                console.log('Font application results:', elements.map(({selector, computedFont}) => 
+                    `${selector}: ${computedFont}`
+                ));
+            });
             const fontStyle = document.createElement('style');
             fontStyle.textContent = `
                 @layer override {
