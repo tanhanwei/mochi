@@ -53,9 +53,58 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                 
                 console.log('Prompt API status:', promptSession ? 'initialized' : 'not initialized');
                 
-                // Try to find the main content using various selectors
-                const mainContent = document.querySelector('main, article, .content, .post, #content, #main') 
-                    || document.querySelector('div[role="main"]');
+                // Try to find the main content using various selectors, including Straits Times specific ones
+                const mainContent = document.querySelector([
+                    'main',
+                    'article',
+                    '.content',
+                    '.post',
+                    '#content',
+                    '#main',
+                    'div[role="main"]',
+                    '.article-content',
+                    '.article-body',
+                    '.story-body',
+                    '.article-text',
+                    '.story-content',
+                    '[itemprop="articleBody"]',
+                    // Straits Times specific selectors
+                    '.paid-premium-content',
+                    '.str-story-body',
+                    '.str-article-content',
+                    '#story-body',
+                    '.story-content'
+                ].join(', '));
+
+                // Log the found element and its hierarchy
+                if (mainContent) {
+                    console.log('Main content element details:', {
+                        element: mainContent,
+                        path: getElementPath(mainContent),
+                        parentClasses: mainContent.parentElement?.className,
+                        childElements: Array.from(mainContent.children).map(child => ({
+                            tag: child.tagName,
+                            class: child.className,
+                            id: child.id
+                        }))
+                    });
+                }
+
+                // Helper function to get element's DOM path
+                function getElementPath(element) {
+                    const path = [];
+                    while (element && element.nodeType === Node.ELEMENT_NODE) {
+                        let selector = element.nodeName.toLowerCase();
+                        if (element.id) {
+                            selector += '#' + element.id;
+                        } else if (element.className) {
+                            selector += '.' + Array.from(element.classList).join('.');
+                        }
+                        path.unshift(selector);
+                        element = element.parentNode;
+                    }
+                    return path.join(' > ');
+                }
                 
                 if (!mainContent) {
                     console.error('Could not find main content element');
