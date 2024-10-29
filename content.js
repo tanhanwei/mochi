@@ -290,18 +290,25 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                             newElement.style.padding = '10px';
                             newElement.style.borderLeft = '3px solid #3498db';
                             newElement.style.margin = '10px 0';
+                            newElement.style.fontFamily = 'OpenDyslexic, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif';
             
                             // Add styles for markdown elements
                             const markdownStyles = document.createElement('style');
                             markdownStyles.textContent = `
+                                .simplified-text {
+                                    font-family: 'OpenDyslexic', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif !important;
+                                }
                                 .simplified-text ul, .simplified-text ol {
                                     margin-left: 20px;
+                                    font-family: 'OpenDyslexic', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif !important;
                                 }
                                 .simplified-text strong {
                                     font-weight: bold;
+                                    font-family: 'OpenDyslexic', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif !important;
                                 }
                                 .simplified-text em {
                                     font-style: italic;
+                                    font-family: 'OpenDyslexic', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif !important;
                                 }
                                 .simplified-text code {
                                     background: #f8f8f8;
@@ -313,6 +320,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                                     margin-left: 0;
                                     padding-left: 10px;
                                     color: #666;
+                                    font-family: 'OpenDyslexic', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif !important;
                                 }
                             `;
                             document.head.appendChild(markdownStyles);
@@ -477,40 +485,6 @@ function adjustLayout() {
                     `${selector}: ${computedFont}`
                 ));
             });
-            const fontStyle = document.createElement('style');
-            fontStyle.textContent = `
-                @layer override {
-                    @supports (font-family: OpenDyslexic) {
-                        /* Maximum specificity override */
-                        html body * :where(:not(i):not(pre):not(code):not(.fa):not(.material-icons):not([class*="icon"])) {
-                            font-family: 'OpenDyslexic', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif !important;
-                            -webkit-font-family: 'OpenDyslexic', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif !important;
-                            -moz-font-family: 'OpenDyslexic', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif !important;
-                        }
-
-                        /* Force override on all text elements with maximum specificity */
-                        html body :is(p, span, div, h1, h2, h3, h4, h5, h6, li, td, th, dt, dd, label, input, textarea, button, a):not(:empty) {
-                            font-family: 'OpenDyslexic', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif !important;
-                            -webkit-font-family: 'OpenDyslexic', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif !important;
-                            -moz-font-family: 'OpenDyslexic', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif !important;
-                        }
-
-                        /* Target common article and content containers with attribute selectors */
-                        html body :is([class*="article"], [class*="content"], [class*="text"], [class*="body"], [class*="main"], [id*="article"], [id*="content"], [id*="text"], [id*="body"], [id*="main"]):not(:empty) {
-                            font-family: 'OpenDyslexic', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif !important;
-                            -webkit-font-family: 'OpenDyslexic', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif !important;
-                            -moz-font-family: 'OpenDyslexic', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif !important;
-                        }
-
-                        /* Override any potential web components and shadow DOM */
-                        :host, :host *, :defined, :root {
-                            font-family: 'OpenDyslexic', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif !important;
-                            -webkit-font-family: 'OpenDyslexic', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif !important;
-                            -moz-font-family: 'OpenDyslexic', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif !important;
-                        }
-                    }
-                }
-            `;
             
             // Log before style injection
             console.log('Attempting to inject font styles...');
