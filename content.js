@@ -558,10 +558,7 @@ function adjustLayout() {
             
             // Log before style injection
             console.log('Attempting to inject font styles...');
-            
-            // Get original font family before changes
-            const originalFont = window.getComputedStyle(document.body).fontFamily;
-            console.log('Original font family:', originalFont);
+            console.log('Original font family:', window.getComputedStyle(document.body).fontFamily);
             
             // Ensure the style is inserted at the end of head
             document.head.appendChild(fontStyle);
