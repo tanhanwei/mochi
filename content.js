@@ -702,5 +702,9 @@ function preloadFonts() {
 }
 
 // Initialize
-preloadFonts();
-ensureInitialized();
+document.addEventListener('DOMContentLoaded', () => {
+    if (document.head) {
+        preloadFonts();
+    }
+    ensureInitialized();
+});
