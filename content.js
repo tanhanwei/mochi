@@ -290,37 +290,45 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                             newElement.style.padding = '10px';
                             newElement.style.borderLeft = '3px solid #3498db';
                             newElement.style.margin = '10px 0';
-                            newElement.style.fontFamily = 'OpenDyslexic, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif';
-            
-                            // Add styles for markdown elements
-                            const markdownStyles = document.createElement('style');
-                            markdownStyles.textContent = `
+                            // Add font-face definition for OpenDyslexic
+                            const fontFaceStyle = document.createElement('style');
+                            fontFaceStyle.textContent = `
+                                @font-face {
+                                    font-family: 'OpenDyslexic';
+                                    src: url('${chrome.runtime.getURL('fonts/OpenDyslexic-Regular.otf')}') format('opentype');
+                                    font-weight: normal;
+                                    font-style: normal;
+                                }
+                            `;
+                            document.head.appendChild(fontFaceStyle);
+
+                            // Add styles for simplified text
+                            const simplifiedStyles = document.createElement('style');
+                            simplifiedStyles.textContent = `
                                 .simplified-text {
+                                    font-family: 'OpenDyslexic', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif !important;
+                                    background-color: #f0f8ff !important;
+                                    padding: 10px !important;
+                                    border-left: 3px solid #3498db !important;
+                                    margin: 10px 0 !important;
+                                    line-height: 1.6 !important;
+                                }
+                                .simplified-text * {
                                     font-family: 'OpenDyslexic', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif !important;
                                 }
                                 .simplified-text ul, .simplified-text ol {
-                                    margin-left: 20px;
-                                    font-family: 'OpenDyslexic', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif !important;
-                                }
-                                .simplified-text strong {
-                                    font-weight: bold;
-                                    font-family: 'OpenDyslexic', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif !important;
-                                }
-                                .simplified-text em {
-                                    font-style: italic;
-                                    font-family: 'OpenDyslexic', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif !important;
+                                    margin-left: 20px !important;
                                 }
                                 .simplified-text code {
-                                    background: #f8f8f8;
-                                    padding: 2px 4px;
-                                    border-radius: 3px;
+                                    background: #f8f8f8 !important;
+                                    padding: 2px 4px !important;
+                                    border-radius: 3px !important;
                                 }
                                 .simplified-text blockquote {
-                                    border-left: 3px solid #ddd;
-                                    margin-left: 0;
-                                    padding-left: 10px;
-                                    color: #666;
-                                    font-family: 'OpenDyslexic', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif !important;
+                                    border-left: 3px solid #ddd !important;
+                                    margin-left: 0 !important;
+                                    padding-left: 10px !important;
+                                    color: #666 !important;
                                 }
                             `;
                             document.head.appendChild(markdownStyles);
@@ -443,117 +451,6 @@ function adjustLayout() {
             mainContent.style.padding = '20px';
             mainContent.style.fontSize = '18px';
             mainContent.style.lineHeight = '1.6';
-            // Add OpenDyslexic font from jsDelivr CDN
-            const fontLink = document.createElement('link');
-            fontLink.rel = 'stylesheet';
-            // Always apply OpenDyslexic font by default
-            console.log('Attempting to apply OpenDyslexic font...');
-            const style = document.createElement('style');
-            style.textContent = `
-                @font-face {
-                    font-family: 'OpenDyslexic';
-                    src: url('chrome-extension://${chrome.runtime.id}/fonts/OpenDyslexic-Regular.otf') format('opentype');
-                    font-weight: normal;
-                    font-style: normal;
-                }
-            `;
-            document.head.appendChild(style);
-            console.log('Font face style added to document head');
-            
-            // Log original font family before changes
-            const originalFont = window.getComputedStyle(document.body).fontFamily;
-            console.log('Original body font-family:', originalFont);
-            
-            // Apply the font to the main content with logging
-            console.log('Starting font application...');
-            
-            // Verify font loading
-            document.fonts.ready.then(() => {
-                console.log('Available fonts:', Array.from(document.fonts).map(f => f.family));
-                console.log('OpenDyslexic loaded:', document.fonts.check('12px OpenDyslexic'));
-                
-                // Sample some elements to verify font application
-                const elements = ['body', 'p', 'h1', 'h2', 'div'].map(selector => ({
-                    selector,
-                    element: document.querySelector(selector),
-                    computedFont: document.querySelector(selector) ? 
-                        window.getComputedStyle(document.querySelector(selector)).fontFamily : 
-                        'element not found'
-                }));
-                
-                console.log('Font application results:', elements.map(({selector, computedFont}) => 
-                    `${selector}: ${computedFont}`
-                ));
-            });
-            
-            // Log before style injection
-            console.log('Attempting to inject font styles...');
-            console.log('Original font family:', window.getComputedStyle(document.body).fontFamily);
-            
-            // Ensure the style is inserted at the end of head
-            document.head.appendChild(fontStyle);
-            console.log('Font styles injected into head');
-
-            // Verify font loading
-            document.fonts.ready.then(() => {
-                console.log('Available fonts:', Array.from(document.fonts).map(f => f.family));
-                console.log('OpenDyslexic loaded:', document.fonts.check('12px OpenDyslexic'));
-                
-                // Check if font was actually applied
-                const newFont = window.getComputedStyle(document.body).fontFamily;
-                console.log('New font family:', newFont);
-                
-                // Check specific elements
-                const elements = document.querySelectorAll('p, h1, h2, h3, div');
-                elements.forEach(el => {
-                    const computedFont = window.getComputedStyle(el).fontFamily;
-                    console.log(`Font for ${el.tagName}:`, computedFont);
-                });
-            });
-            
-            // Also inject into shadow DOM roots if they exist
-            const shadowRoots = document.querySelectorAll('*');
-            let shadowRootCount = 0;
-            shadowRoots.forEach(element => {
-                if (element.shadowRoot) {
-                    element.shadowRoot.appendChild(fontStyle.cloneNode(true));
-                    shadowRootCount++;
-                }
-            });
-            console.log(`Injected styles into ${shadowRootCount} shadow roots`);
-
-            // Add mutation observer to handle dynamically loaded content
-            const observer = new MutationObserver((mutations) => {
-                mutations.forEach((mutation) => {
-                    if (mutation.addedNodes.length) {
-                        console.log('New content detected, reapplying font styles');
-                        mutation.addedNodes.forEach(node => {
-                            if (node.nodeType === 1) { // Element node
-                                node.style.fontFamily = 'var(--main-font)';
-                            }
-                        });
-                    }
-                });
-            });
-
-            observer.observe(document.body, {
-                childList: true,
-                subtree: true
-            });
-
-            // Verify font application
-            console.log('Font family applied to main content:', mainContent.style.fontFamily);
-            console.log('Computed font family:', window.getComputedStyle(mainContent).fontFamily);
-            
-            // Verify font loading
-            document.fonts.ready.then(() => {
-                console.log('Fonts loaded:', Array.from(document.fonts).map(f => f.family));
-                if (document.fonts.check('12px OpenDyslexic')) {
-                    console.log('OpenDyslexic font is available');
-                } else {
-                    console.log('OpenDyslexic font is not available');
-                }
-            });
             mainContent.style.color = '#2c3e50';
             mainContent.style.backgroundColor = '#ffffff';
 
