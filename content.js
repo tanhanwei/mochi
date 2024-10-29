@@ -331,7 +331,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                                     color: #666 !important;
                                 }
                             `;
-                            document.head.appendChild(markdownStyles);
+                            document.head.appendChild(simplifiedStyles);
                             newElement.classList.add('simplified-text');
                             newElement.setAttribute('data-original-text', p.textContent);
                             p.parentNode.replaceChild(newElement, p);
