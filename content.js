@@ -480,78 +480,34 @@ function adjustLayout() {
             const fontStyle = document.createElement('style');
             fontStyle.textContent = `
                 @layer override {
-                    /* Global override */
-                    :root {
-                        --main-font: 'OpenDyslexic', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif !important;
-                    }
+                    @supports (font-family: OpenDyslexic) {
+                        /* Maximum specificity override */
+                        html body * :where(:not(i):not(pre):not(code):not(.fa):not(.material-icons):not([class*="icon"])) {
+                            font-family: 'OpenDyslexic', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif !important;
+                            -webkit-font-family: 'OpenDyslexic', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif !important;
+                            -moz-font-family: 'OpenDyslexic', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif !important;
+                        }
 
-                    /* Force font on absolutely everything */
-                    *, 
-                    *::before, 
-                    *::after,
-                    :not(i):not(pre):not(code):not(.fa):not(.material-icons) {
-                        font-family: var(--main-font) !important;
-                        -webkit-font-family: var(--main-font) !important;
-                        -moz-font-family: var(--main-font) !important;
-                    }
+                        /* Force override on all text elements with maximum specificity */
+                        html body :is(p, span, div, h1, h2, h3, h4, h5, h6, li, td, th, dt, dd, label, input, textarea, button, a):not(:empty) {
+                            font-family: 'OpenDyslexic', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif !important;
+                            -webkit-font-family: 'OpenDyslexic', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif !important;
+                            -moz-font-family: 'OpenDyslexic', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif !important;
+                        }
 
-                    /* Target specific CNA elements */
-                    .article-content,
-                    .article-body,
-                    .article-text,
-                    .article p,
-                    .article div,
-                    .article span,
-                    [class*="article"],
-                    [class*="content"],
-                    [class*="text"] {
-                        font-family: var(--main-font) !important;
-                        -webkit-font-family: var(--main-font) !important;
-                        -moz-font-family: var(--main-font) !important;
-                    }
+                        /* Target common article and content containers with attribute selectors */
+                        html body :is([class*="article"], [class*="content"], [class*="text"], [class*="body"], [class*="main"], [id*="article"], [id*="content"], [id*="text"], [id*="body"], [id*="main"]):not(:empty) {
+                            font-family: 'OpenDyslexic', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif !important;
+                            -webkit-font-family: 'OpenDyslexic', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif !important;
+                            -moz-font-family: 'OpenDyslexic', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif !important;
+                        }
 
-                    /* Target specific news sites and common content areas */
-                    article, 
-                    .article-content,
-                    .article-body,
-                    [class*="article"],
-                    [class*="content"],
-                    [class*="story"],
-                    [class*="text"],
-                    [class*="body"],
-                    [class*="main"],
-                    main,
-                    article,
-                    section,
-                    p,
-                    div,
-                    span,
-                    h1, h2, h3, h4, h5, h6,
-                    li,
-                    td,
-                    th,
-                    dt,
-                    dd,
-                    label,
-                    input[type="text"],
-                    textarea {
-                        font-family: var(--main-font) !important;
-                        -webkit-font-family: var(--main-font) !important;
-                        -moz-font-family: var(--main-font) !important;
-                    }
-
-                    /* Target shadow DOM elements */
-                    :host, :host * {
-                        font-family: var(--main-font) !important;
-                        -webkit-font-family: var(--main-font) !important;
-                        -moz-font-family: var(--main-font) !important;
-                    }
-
-                    /* Override web components */
-                    :defined {
-                        font-family: var(--main-font) !important;
-                        -webkit-font-family: var(--main-font) !important;
-                        -moz-font-family: var(--main-font) !important;
+                        /* Override any potential web components and shadow DOM */
+                        :host, :host *, :defined, :root {
+                            font-family: 'OpenDyslexic', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif !important;
+                            -webkit-font-family: 'OpenDyslexic', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif !important;
+                            -moz-font-family: 'OpenDyslexic', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif !important;
+                        }
                     }
                 }
             `;
