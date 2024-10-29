@@ -79,19 +79,49 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                 };
 
                 // Get all content elements (paragraphs, headers, and lists)
-                const contentElements = Array.from(mainContent.querySelectorAll('p, h1, h2, h3, h4, h5, h6, ul, ol, dl'))
-                    .filter(el => {
-                        if (isHeader(el)) return true;
-                        
-                        // Skip elements that are likely metadata
-                        const isMetadata = 
-                            el.closest('.author, .meta, .claps, .likes, .stats, .profile, .bio, header, footer') ||
-                            (el.tagName !== 'UL' && el.tagName !== 'OL' && el.tagName !== 'DL' && el.textContent.trim().length < 50) ||
-                            /^(By|Published|Updated|Written by|(\d+) min read|(\d+) claps)/i.test(el.textContent.trim());
-                        
-                        // Include if it's not metadata and either a list or paragraph/header
-                        return !isMetadata;
-                    });
+                // More detailed logging of the main content element
+                console.log('Main content structure:', {
+                    innerHTML: mainContent.innerHTML.substring(0, 200) + '...',
+                    childNodes: mainContent.childNodes.length,
+                    children: mainContent.children.length
+                });
+
+                // Try to find article content with more specific selectors
+                const contentElements = Array.from(mainContent.querySelectorAll([
+                    'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol', 'dl',
+                    '.article-content p',
+                    '.article-body p',
+                    '.story-body p',
+                    '.article-text p',
+                    '.story-content p',
+                    '[itemprop="articleBody"] p',
+                    '.article p',
+                    '.story p'
+                ].join(', ')))
+                .filter(el => {
+                    if (isHeader(el)) return true;
+                    
+                    // Skip elements that are likely metadata
+                    const isMetadata = 
+                        el.closest('.author, .meta, .claps, .likes, .stats, .profile, .bio, header, footer, .premium-box') ||
+                        (el.tagName !== 'UL' && el.tagName !== 'OL' && el.tagName !== 'DL' && el.textContent.trim().length < 50) ||
+                        /^(By|Published|Updated|Written by|(\d+) min read|(\d+) claps)/i.test(el.textContent.trim());
+                    
+                    const hasContent = el.textContent.trim().length > 0;
+                    
+                    // Log skipped elements for debugging
+                    if (isMetadata || !hasContent) {
+                        console.log('Skipping element:', {
+                            type: el.tagName,
+                            class: el.className,
+                            text: el.textContent.substring(0, 50) + '...',
+                            reason: isMetadata ? 'metadata' : 'no content'
+                        });
+                    }
+                    
+                    // Include if it's not metadata and either a list or paragraph/header
+                    return !isMetadata && hasContent;
+                });
 
                 console.log(`Found ${contentElements.length} content elements to process`);
 
