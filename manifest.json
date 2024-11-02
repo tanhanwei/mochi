@@ -23,7 +23,7 @@
   "content_scripts": [{
     "matches": ["<all_urls>"],
     "js": ["marked.js", "logger.js", "content.js"],
-    "css": ["content.css", "fonts.css"],
+    "css": ["content.css"],
     "run_at": "document_start"
   }],
   "web_accessible_resources": [{
