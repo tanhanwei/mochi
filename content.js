@@ -369,31 +369,15 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                             newElement.style.padding = '10px';
                             newElement.style.borderLeft = '3px solid #3498db';
                             newElement.style.margin = '10px 0';
-                            // Add font-face definition for OpenDyslexic
-                            const fontFaceStyle = document.createElement('style');
-                            fontFaceStyle.textContent = `
-                                @font-face {
-                                    font-family: 'OpenDyslexic';
-                                    src: url('${chrome.runtime.getURL('fonts/OpenDyslexic-Regular.otf')}') format('opentype');
-                                    font-weight: normal;
-                                    font-style: normal;
-                                }
-                            `;
-                            document.head.appendChild(fontFaceStyle);
-
                             // Add styles for simplified text
                             const simplifiedStyles = document.createElement('style');
                             simplifiedStyles.textContent = `
                                 .simplified-text {
-                                    font-family: 'OpenDyslexic', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif !important;
                                     background-color: #f0f8ff !important;
                                     padding: 10px !important;
                                     border-left: 3px solid #3498db !important;
                                     margin: 10px 0 !important;
                                     line-height: 1.6 !important;
-                                }
-                                .simplified-text * {
-                                    font-family: 'OpenDyslexic', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif !important;
                                 }
                                 .simplified-text ul, .simplified-text ol {
                                     margin-left: 20px !important;
@@ -571,6 +555,44 @@ function adjustLayout() {
 // Initialize AI capabilities when content script loads
 let initializationPromise = null;
 
+// Function to apply OpenDyslexic font to simplified text
+function applyOpenDyslexicFont() {
+    // Add font-face definition for OpenDyslexic if not already present
+    if (!document.getElementById('opendyslexic-font-face')) {
+        const fontFaceStyle = document.createElement('style');
+        fontFaceStyle.id = 'opendyslexic-font-face';
+        fontFaceStyle.textContent = `
+            @font-face {
+                font-family: 'OpenDyslexic';
+                src: url('${chrome.runtime.getURL('fonts/OpenDyslexic-Regular.otf')}') format('opentype');
+                font-weight: normal;
+                font-style: normal;
+            }
+        `;
+        document.head.appendChild(fontFaceStyle);
+    }
+
+    // Apply font to all simplified text elements
+    const simplifiedElements = document.querySelectorAll('.simplified-text');
+    simplifiedElements.forEach(element => {
+        element.style.fontFamily = "'OpenDyslexic', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif";
+        Array.from(element.getElementsByTagName('*')).forEach(child => {
+            child.style.fontFamily = "'OpenDyslexic', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif";
+        });
+    });
+}
+
+// Function to remove OpenDyslexic font from simplified text
+function removeOpenDyslexicFont() {
+    const simplifiedElements = document.querySelectorAll('.simplified-text');
+    simplifiedElements.forEach(element => {
+        element.style.fontFamily = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif";
+        Array.from(element.getElementsByTagName('*')).forEach(child => {
+            child.style.fontFamily = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif";
+        });
+    });
+}
+
 function ensureInitialized() {
     if (!initializationPromise) {
         console.log('Content script loaded - starting initialization');
@@ -587,30 +609,7 @@ function ensureInitialized() {
     return initializationPromise;
 }
 
-// Preload fonts
-function preloadFonts() {
-    const fontFiles = [
-        'OpenDyslexic-Regular.otf',
-        'OpenDyslexic-Bold.otf',
-        'OpenDyslexic-Italic.otf',
-        'OpenDyslexic-Bold-Italic.otf'
-    ];
-
-    fontFiles.forEach(file => {
-        const link = document.createElement('link');
-        link.href = chrome.runtime.getURL(`fonts/${file}`);
-        link.rel = 'preload';
-        link.as = 'font';
-        link.type = 'font/otf';
-        link.crossOrigin = 'anonymous';
-        document.head.appendChild(link);
-    });
-}
-
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
-    if (document.head) {
-        preloadFonts();
-    }
     ensureInitialized();
 });
