@@ -388,12 +388,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                                     pointer-events: none;
                                     box-shadow: 0 2px 8px rgba(0,0,0,0.3);
                                 }
-                                .simplified-text::before {
-                                    content: '💡';
-                                    margin-right: 5px;
-                                    font-size: 0.9em;
-                                    opacity: 0.7;
-                                }
                                 .simplified-text ul, .simplified-text ol {
                                     margin-left: 20px;
                                 }
