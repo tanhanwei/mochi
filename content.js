@@ -403,6 +403,13 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                                 original: p.textContent.substring(0, 50) + '...',
                                 simplified: newElement.textContent.substring(0, 50) + '...'
                             });
+
+                            // Check if OpenDyslexic is enabled and apply it to the new element
+                            chrome.storage.sync.get('useOpenDyslexic', function(result) {
+                                if (result.useOpenDyslexic) {
+                                    applyOpenDyslexicFont();
+                                }
+                            });
                         });
                         console.log('Successfully replaced paragraph with simplified version');
                     } catch (error) {
@@ -556,7 +563,14 @@ function adjustLayout() {
 let initializationPromise = null;
 
 // Function to apply OpenDyslexic font to simplified text
-function applyOpenDyslexicFont() {
+async function applyOpenDyslexicFont() {
+    // Check if there are any simplified elements first
+    const simplifiedElements = document.querySelectorAll('.simplified-text');
+    if (simplifiedElements.length === 0) {
+        console.log('No simplified text elements found to apply font to');
+        return;
+    }
+
     // Add font-face definition for OpenDyslexic if not already present
     if (!document.getElementById('opendyslexic-font-face')) {
         const fontFaceStyle = document.createElement('style');
@@ -573,7 +587,6 @@ function applyOpenDyslexicFont() {
     }
 
     // Apply font to all simplified text elements
-    const simplifiedElements = document.querySelectorAll('.simplified-text');
     simplifiedElements.forEach(element => {
         element.style.fontFamily = "'OpenDyslexic', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif";
         Array.from(element.getElementsByTagName('*')).forEach(child => {
@@ -585,6 +598,11 @@ function applyOpenDyslexicFont() {
 // Function to remove OpenDyslexic font from simplified text
 function removeOpenDyslexicFont() {
     const simplifiedElements = document.querySelectorAll('.simplified-text');
+    if (simplifiedElements.length === 0) {
+        console.log('No simplified text elements found to remove font from');
+        return;
+    }
+
     simplifiedElements.forEach(element => {
         element.style.fontFamily = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif";
         Array.from(element.getElementsByTagName('*')).forEach(child => {
