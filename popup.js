@@ -1,7 +1,8 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Restore toggle state
-    chrome.storage.sync.get('fontEnabled', function(result) {
+    // Restore toggle states
+    chrome.storage.sync.get(['fontEnabled', 'hoverEnabled'], function(result) {
         document.getElementById('fontToggle').checked = result.fontEnabled || false;
+        document.getElementById('hoverToggle').checked = result.hoverEnabled || false;
     });
 
     // Button click handlers
@@ -104,6 +105,33 @@ document.addEventListener('DOMContentLoaded', function() {
         URL.revokeObjectURL(url);
     });
 }); // Close downloadLogs click handler
+
+    // Hover to show original toggle handler
+    const hoverToggle = document.getElementById('hoverToggle');
+    
+    // Request current hover state when popup opens
+    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+        chrome.tabs.sendMessage(tabs[0].id, { action: 'getHoverState' }, function(response) {
+            if (response && response.hoverEnabled !== undefined) {
+                hoverToggle.checked = response.hoverEnabled;
+            }
+        });
+    });
+
+    hoverToggle.addEventListener('change', function(e) {
+        const enabled = e.target.checked;
+        
+        // Save preference
+        chrome.storage.sync.set({ hoverEnabled: enabled });
+        
+        // Apply to current tab
+        chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+            chrome.tabs.sendMessage(tabs[0].id, {
+                action: 'toggleHover',
+                enabled: enabled
+            });
+        });
+    });
 
     // OpenDyslexic font toggle handler
     const fontToggle = document.getElementById('fontToggle');

@@ -375,6 +375,19 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                                     line-height: 1.6;
                                     font-weight: 400;
                                 }
+                                .original-text-tooltip {
+                                    position: absolute;
+                                    max-width: 400px;
+                                    background-color: rgba(0, 0, 0, 0.8);
+                                    color: white;
+                                    padding: 10px;
+                                    border-radius: 5px;
+                                    font-size: 14px;
+                                    line-height: 1.4;
+                                    z-index: 10000;
+                                    pointer-events: none;
+                                    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+                                }
                                 .simplified-text::before {
                                     content: '💡';
                                     margin-right: 5px;
@@ -400,6 +413,15 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                             newElement.classList.add('simplified-text');
                             newElement.setAttribute('data-original-text', p.textContent);
                             p.parentNode.replaceChild(newElement, p);
+                            
+                            // Store reference to simplified elements
+                            simplifiedElements.push(newElement);
+
+                            // Add hover event listeners if enabled
+                            if (hoverEnabled) {
+                                newElement.addEventListener('mouseenter', showOriginalText);
+                                newElement.addEventListener('mouseleave', hideOriginalText);
+                            }
                             
                             console.log(`Replaced paragraph ${index + 1}/${originalParagraphs.length}:`, {
                                 original: p.textContent.substring(0, 50) + '...',
@@ -515,6 +537,20 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             case "getFontState":
                 sendResponse({ fontEnabled: fontEnabled });
                 break;
+                
+            case "toggleHover":
+                console.log("Toggling hover to show original text...");
+                hoverEnabled = request.enabled;
+                if (hoverEnabled) {
+                    enableHoverFeature();
+                } else {
+                    disableHoverFeature();
+                }
+                break;
+
+            case "getHoverState":
+                sendResponse({ hoverEnabled: hoverEnabled });
+                break;
         }
         sendResponse({success: true});
     })();
@@ -576,14 +612,20 @@ function adjustLayout() {
 // Initialize AI capabilities when content script loads
 let initializationPromise = null;
 
-// Track font state
+// Track feature states
 let fontEnabled = false;
+let hoverEnabled = false;
+let simplifiedElements = [];
 
-// Load font state from storage when script loads
-chrome.storage.sync.get(['fontEnabled'], function(result) {
+// Load feature states from storage when script loads
+chrome.storage.sync.get(['fontEnabled', 'hoverEnabled'], function(result) {
     fontEnabled = result.fontEnabled || false;
+    hoverEnabled = result.hoverEnabled || false;
     if (fontEnabled) {
         toggleOpenDyslexicFont(true);
+    }
+    if (hoverEnabled) {
+        enableHoverFeature();
     }
 });
 
@@ -629,6 +671,47 @@ function toggleOpenDyslexicFont(enabled) {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif !important;
         }
     `;
+}
+
+function enableHoverFeature() {
+    console.log("Enabling hover feature...");
+    simplifiedElements = document.querySelectorAll('.simplified-text');
+    simplifiedElements.forEach(el => {
+        el.addEventListener('mouseenter', showOriginalText);
+        el.addEventListener('mouseleave', hideOriginalText);
+    });
+}
+
+function disableHoverFeature() {
+    console.log("Disabling hover feature...");
+    simplifiedElements.forEach(el => {
+        el.removeEventListener('mouseenter', showOriginalText);
+        el.removeEventListener('mouseleave', hideOriginalText);
+    });
+}
+
+function showOriginalText(event) {
+    const originalText = event.currentTarget.getAttribute('data-original-text');
+    if (!originalText) return;
+
+    const tooltip = document.createElement('div');
+    tooltip.className = 'original-text-tooltip';
+    tooltip.textContent = originalText;
+    document.body.appendChild(tooltip);
+
+    const rect = event.currentTarget.getBoundingClientRect();
+    tooltip.style.left = `${rect.left + window.scrollX}px`;
+    tooltip.style.top = `${rect.top + window.scrollY - tooltip.offsetHeight - 10}px`;
+
+    event.currentTarget._originalTextTooltip = tooltip;
+}
+
+function hideOriginalText(event) {
+    const tooltip = event.currentTarget._originalTextTooltip;
+    if (tooltip) {
+        tooltip.remove();
+        event.currentTarget._originalTextTooltip = null;
+    }
 }
 
 function ensureInitialized() {
