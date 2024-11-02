@@ -103,6 +103,7 @@ document.addEventListener('DOMContentLoaded', function() {
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
     });
+}); // Close downloadLogs click handler
 
     // OpenDyslexic font toggle handler
     const fontToggle = document.getElementById('fontToggle');
