@@ -504,14 +504,14 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                 adjustLayout();
                 break;
                 
-            case "applyOpenDyslexicFont":
-                console.log("Applying OpenDyslexic font...");
-                applyOpenDyslexicFont();
+            case "toggleFont":
+                console.log("Toggling OpenDyslexic font...");
+                fontEnabled = request.enabled;
+                toggleOpenDyslexicFont(fontEnabled);
                 break;
                 
-            case "removeOpenDyslexicFont":
-                console.log("Removing OpenDyslexic font...");
-                removeOpenDyslexicFont();
+            case "getFontState":
+                sendResponse({ fontEnabled: fontEnabled });
                 break;
         }
         sendResponse({success: true});
@@ -574,12 +574,23 @@ function adjustLayout() {
 // Initialize AI capabilities when content script loads
 let initializationPromise = null;
 
-// Function to apply OpenDyslexic font to simplified text
-async function applyOpenDyslexicFont() {
-    console.log('Applying OpenDyslexic font...');
+// Track font state
+let fontEnabled = false;
+
+// Load font state from storage when script loads
+chrome.storage.sync.get(['fontEnabled'], function(result) {
+    fontEnabled = result.fontEnabled || false;
+    if (fontEnabled) {
+        toggleOpenDyslexicFont(true);
+    }
+});
+
+// Function to toggle OpenDyslexic font
+function toggleOpenDyslexicFont(enabled) {
+    console.log(`${enabled ? 'Applying' : 'Removing'} OpenDyslexic font...`);
     
-    // Add font-face definition for OpenDyslexic if not already present
-    if (!document.getElementById('opendyslexic-font-face')) {
+    // Add font-face definition if needed
+    if (enabled && !document.getElementById('opendyslexic-font-face')) {
         const fontFaceStyle = document.createElement('style');
         fontFaceStyle.id = 'opendyslexic-font-face';
         fontFaceStyle.textContent = `
@@ -593,36 +604,22 @@ async function applyOpenDyslexicFont() {
         document.head.appendChild(fontFaceStyle);
     }
 
-    // Add a style tag for simplified text elements if not present
-    if (!document.getElementById('simplified-text-style')) {
-        const simplifiedStyle = document.createElement('style');
+    // Update or create style for simplified text
+    let simplifiedStyle = document.getElementById('simplified-text-style');
+    if (!simplifiedStyle) {
+        simplifiedStyle = document.createElement('style');
         simplifiedStyle.id = 'simplified-text-style';
-        simplifiedStyle.textContent = `
-            .simplified-text {
-                font-family: 'OpenDyslexic', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif !important;
-            }
-            .simplified-text * {
-                font-family: 'OpenDyslexic', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif !important;
-            }
-        `;
         document.head.appendChild(simplifiedStyle);
     }
-}
 
-// Function to remove OpenDyslexic font from simplified text
-function removeOpenDyslexicFont() {
-    console.log('Removing OpenDyslexic font...');
-    
-    // Remove the simplified text style
-    const simplifiedStyle = document.getElementById('simplified-text-style');
-    if (simplifiedStyle) {
-        simplifiedStyle.remove();
-    }
-    
-    // Add default font style
-    const defaultStyle = document.createElement('style');
-    defaultStyle.id = 'simplified-text-style';
-    defaultStyle.textContent = `
+    simplifiedStyle.textContent = enabled ? `
+        .simplified-text {
+            font-family: 'OpenDyslexic', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif !important;
+        }
+        .simplified-text * {
+            font-family: 'OpenDyslexic', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif !important;
+        }
+    ` : `
         .simplified-text {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif !important;
         }
@@ -630,7 +627,6 @@ function removeOpenDyslexicFont() {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif !important;
         }
     `;
-    document.head.appendChild(defaultStyle);
 }
 
 function ensureInitialized() {

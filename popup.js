@@ -103,16 +103,28 @@ document.addEventListener('DOMContentLoaded', async function() {
     });
 
     // OpenDyslexic font toggle handler
-    document.getElementById('useOpenDyslexic').addEventListener('change', function(e) {
-        const useFont = e.target.checked;
+    const fontToggle = document.getElementById('fontToggle');
+    
+    // Request current font state when popup opens
+    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+        chrome.tabs.sendMessage(tabs[0].id, { action: 'getFontState' }, function(response) {
+            if (response && response.fontEnabled !== undefined) {
+                fontToggle.checked = response.fontEnabled;
+            }
+        });
+    });
+
+    fontToggle.addEventListener('change', function(e) {
+        const enabled = e.target.checked;
         
         // Save preference
-        chrome.storage.sync.set({ useOpenDyslexic: useFont });
+        chrome.storage.sync.set({ fontEnabled: enabled });
         
         // Apply to current tab
         chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
             chrome.tabs.sendMessage(tabs[0].id, {
-                action: useFont ? "applyOpenDyslexicFont" : "removeOpenDyslexicFont"
+                action: 'toggleFont',
+                enabled: enabled
             });
         });
     });
