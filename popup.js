@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', async function() {
     // Restore toggle state
-    const result = await chrome.storage.sync.get('useOpenDyslexic');
-    document.getElementById('useOpenDyslexic').checked = result.useOpenDyslexic || false;
+    const result = await chrome.storage.sync.get('fontEnabled');
+    document.getElementById('fontToggle').checked = result.fontEnabled || false;
 
     // Button click handlers
     document.getElementById('simplifyText').addEventListener('click', function() {
