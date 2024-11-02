@@ -365,33 +365,35 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                                     simplifiedParagraphs[index];
                             }
                             
-                            newElement.style.backgroundColor = '#f0f8ff';
-                            newElement.style.padding = '10px';
-                            newElement.style.borderLeft = '3px solid #3498db';
-                            newElement.style.margin = '10px 0';
                             // Add styles for simplified text
                             const simplifiedStyles = document.createElement('style');
                             simplifiedStyles.textContent = `
                                 .simplified-text {
-                                    background-color: #f0f8ff !important;
-                                    padding: 10px !important;
-                                    border-left: 3px solid #3498db !important;
-                                    margin: 10px 0 !important;
-                                    line-height: 1.6 !important;
+                                    padding-left: 5px;
+                                    padding-right: 5px;
+                                    margin: 10px 0;
+                                    line-height: 1.6;
+                                    font-weight: 400;
+                                }
+                                .simplified-text::before {
+                                    content: '💡';
+                                    margin-right: 5px;
+                                    font-size: 0.9em;
+                                    opacity: 0.7;
                                 }
                                 .simplified-text ul, .simplified-text ol {
-                                    margin-left: 20px !important;
+                                    margin-left: 20px;
                                 }
                                 .simplified-text code {
-                                    background: #f8f8f8 !important;
-                                    padding: 2px 4px !important;
-                                    border-radius: 3px !important;
+                                    background: #f8f8f8;
+                                    padding: 2px 4px;
+                                    border-radius: 3px;
                                 }
                                 .simplified-text blockquote {
-                                    border-left: 3px solid #ddd !important;
-                                    margin-left: 0 !important;
-                                    padding-left: 10px !important;
-                                    color: #666 !important;
+                                    border-left: 2px solid #ddd;
+                                    margin-left: 0;
+                                    padding-left: 10px;
+                                    color: #666;
                                 }
                             `;
                             document.head.appendChild(simplifiedStyles);
