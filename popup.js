@@ -27,47 +27,48 @@ document.addEventListener('DOMContentLoaded', function() {
         try {
             console.log('Fetching logs from storage...');
             chrome.storage.local.get(null, function(result) {
-            console.log('Storage contents:', result);
-            
-            const logKeys = Object.keys(result)
-                .filter(k => k.startsWith('log_'))
-                .sort()
-                .reverse();
-            
-            console.log('Found log keys:', logKeys);
-
-            // Debug log storage state
-            for (const key of logKeys) {
-                const entry = result[key];
-                console.log('Log entry:', {
-                    key,
-                    hasContent: !!entry?.content,
-                    contentLength: entry?.content?.length,
-                    timestamp: entry?.timestamp
-                });
-            }
-            
-            const logContent = document.getElementById('logContent');
-            const logsView = document.getElementById('logsView');
-            
-            if (logKeys.length === 0) {
-                logContent.textContent = 'No logs found';
-                console.log('No logs found in storage');
-            } else {
-                const allLogs = logKeys.map(key => {
-                    const entry = result[key];
-                    console.log('Processing log entry:', { key, entry });
-                    return entry.content || 'Invalid log entry';
-                }).join('\n');
+                console.log('Storage contents:', result);
                 
-                logContent.textContent = allLogs;
-                console.log('Displayed logs:', {
-                    numberOfEntries: logKeys.length,
-                    totalLength: allLogs.length
-                });
-            }
-            
-            logsView.style.display = 'block';
+                const logKeys = Object.keys(result)
+                    .filter(k => k.startsWith('log_'))
+                    .sort()
+                    .reverse();
+                
+                console.log('Found log keys:', logKeys);
+
+                // Debug log storage state
+                for (const key of logKeys) {
+                    const entry = result[key];
+                    console.log('Log entry:', {
+                        key,
+                        hasContent: !!entry?.content,
+                        contentLength: entry?.content?.length,
+                        timestamp: entry?.timestamp
+                    });
+                }
+                
+                const logContent = document.getElementById('logContent');
+                const logsView = document.getElementById('logsView');
+                
+                if (logKeys.length === 0) {
+                    logContent.textContent = 'No logs found';
+                    console.log('No logs found in storage');
+                } else {
+                    const allLogs = logKeys.map(key => {
+                        const entry = result[key];
+                        console.log('Processing log entry:', { key, entry });
+                        return entry.content || 'Invalid log entry';
+                    }).join('\n');
+                    
+                    logContent.textContent = allLogs;
+                    console.log('Displayed logs:', {
+                        numberOfEntries: logKeys.length,
+                        totalLength: allLogs.length
+                    });
+                }
+                
+                logsView.style.display = 'block';
+            });
         } catch (error) {
             console.error('Error viewing logs:', error);
             const logContent = document.getElementById('logContent');
