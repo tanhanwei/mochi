@@ -1,4 +1,8 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
+    // Restore toggle state
+    const result = await chrome.storage.sync.get('useOpenDyslexic');
+    document.getElementById('useOpenDyslexic').checked = result.useOpenDyslexic || false;
+
     // Button click handlers
     document.getElementById('simplifyText').addEventListener('click', function() {
         chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
@@ -96,5 +100,20 @@ document.addEventListener('DOMContentLoaded', function() {
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
+    });
+
+    // OpenDyslexic font toggle handler
+    document.getElementById('useOpenDyslexic').addEventListener('change', function(e) {
+        const useFont = e.target.checked;
+        
+        // Save preference
+        chrome.storage.sync.set({ useOpenDyslexic: useFont });
+        
+        // Apply to current tab
+        chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+            chrome.tabs.sendMessage(tabs[0].id, {
+                action: useFont ? "applyOpenDyslexicFont" : "removeOpenDyslexicFont"
+            });
+        });
     });
 });
