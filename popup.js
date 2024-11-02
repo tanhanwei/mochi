@@ -1,7 +1,8 @@
-document.addEventListener('DOMContentLoaded', async function() {
+document.addEventListener('DOMContentLoaded', function() {
     // Restore toggle state
-    const result = await chrome.storage.sync.get('fontEnabled');
-    document.getElementById('fontToggle').checked = result.fontEnabled || false;
+    chrome.storage.sync.get('fontEnabled', function(result) {
+        document.getElementById('fontToggle').checked = result.fontEnabled || false;
+    });
 
     // Button click handlers
     document.getElementById('simplifyText').addEventListener('click', function() {
@@ -22,10 +23,10 @@ document.addEventListener('DOMContentLoaded', async function() {
         });
     });
 
-    document.getElementById('viewLogs').addEventListener('click', async function() {
+    document.getElementById('viewLogs').addEventListener('click', function() {
         try {
             console.log('Fetching logs from storage...');
-            const result = await chrome.storage.local.get(null);
+            chrome.storage.local.get(null, function(result) {
             console.log('Storage contents:', result);
             
             const logKeys = Object.keys(result)
@@ -79,8 +80,8 @@ document.addEventListener('DOMContentLoaded', async function() {
         document.getElementById('logsView').style.display = 'none';
     });
 
-    document.getElementById('downloadLogs').addEventListener('click', async function() {
-        const result = await chrome.storage.local.get(null);
+    document.getElementById('downloadLogs').addEventListener('click', function() {
+        chrome.storage.local.get(null, function(result) {
         const logKeys = Object.keys(result)
             .filter(k => k.startsWith('log_'))
             .sort();
