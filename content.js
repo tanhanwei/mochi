@@ -638,6 +638,7 @@ function toggleOpenDyslexicFont(enabled) {
                     src: url('${chrome.runtime.getURL('fonts/OpenDyslexic-Regular.otf')}') format('opentype');
                     font-weight: normal;
                     font-style: normal;
+                    font-display: swap;
                 }
             `;
             document.head.appendChild(fontFaceStyle);
