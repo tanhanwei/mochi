@@ -12,6 +12,20 @@
             <button id="summarize">Summarize</button>
             <button id="adjustLayout">Adjust Layout</button>
             <button id="viewLogs">View Logs</button>
+            
+            <!-- Spacing Controls -->
+            <div class="slider-container">
+                <label for="lineSpacing">Line Spacing: <span id="lineSpacingValue">1.5</span></label>
+                <input type="range" id="lineSpacing" min="1" max="3" step="0.1" value="1.5">
+            </div>
+            <div class="slider-container">
+                <label for="letterSpacing">Letter Spacing: <span id="letterSpacingValue">0px</span></label>
+                <input type="range" id="letterSpacing" min="0" max="5" step="0.1" value="0">
+            </div>
+            <div class="slider-container">
+                <label for="wordSpacing">Word Spacing: <span id="wordSpacingValue">0px</span></label>
+                <input type="range" id="wordSpacing" min="0" max="10" step="0.5" value="0">
+            </div>
             <div class="toggle-container">
                 <label class="toggle">
                     <input type="checkbox" id="fontToggle">

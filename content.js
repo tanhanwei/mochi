@@ -532,6 +532,12 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                 sendResponse({ fontEnabled: fontEnabled });
                 break;
                 
+            case "adjustSpacing":
+                const { lineSpacing, letterSpacing, wordSpacing } = request;
+                applySpacingAdjustments(lineSpacing, letterSpacing, wordSpacing);
+                sendResponse({ success: true });
+                break;
+                
             case "toggleHover":
                 console.log("Toggling hover to show original text...");
                 hoverEnabled = request.enabled;
@@ -732,7 +738,35 @@ function ensureInitialized() {
     return initializationPromise;
 }
 
+// Function to apply spacing adjustments
+function applySpacingAdjustments(lineSpacing, letterSpacing, wordSpacing) {
+    const existingStyle = document.getElementById('spacing-adjustments-style');
+    if (existingStyle) {
+        existingStyle.remove();
+    }
+
+    const style = document.createElement('style');
+    style.id = 'spacing-adjustments-style';
+    style.textContent = `
+        body, body * {
+            line-height: ${lineSpacing} !important;
+            letter-spacing: ${letterSpacing}px !important;
+            word-spacing: ${wordSpacing}px !important;
+        }
+    `;
+    document.head.appendChild(style);
+}
+
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
     ensureInitialized();
+    
+    // Load and apply initial spacing settings
+    chrome.storage.sync.get(['lineSpacing', 'letterSpacing', 'wordSpacing'], function(result) {
+        applySpacingAdjustments(
+            result.lineSpacing || 1.5,
+            result.letterSpacing || 0,
+            result.wordSpacing || 0
+        );
+    });
 });

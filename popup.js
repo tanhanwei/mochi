@@ -1,5 +1,16 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Restore toggle states
+    // Restore toggle and slider states
+    chrome.storage.sync.get(['lineSpacing', 'letterSpacing', 'wordSpacing'], function(result) {
+        document.getElementById('lineSpacing').value = result.lineSpacing || 1.5;
+        document.getElementById('lineSpacingValue').textContent = result.lineSpacing || 1.5;
+        
+        document.getElementById('letterSpacing').value = result.letterSpacing || 0;
+        document.getElementById('letterSpacingValue').textContent = (result.letterSpacing || 0) + 'px';
+        
+        document.getElementById('wordSpacing').value = result.wordSpacing || 0;
+        document.getElementById('wordSpacingValue').textContent = (result.wordSpacing || 0) + 'px';
+    });
+    
     chrome.storage.sync.get(['fontEnabled', 'hoverEnabled'], function(result) {
         document.getElementById('fontToggle').checked = result.fontEnabled || false;
         document.getElementById('hoverToggle').checked = result.hoverEnabled || false;
@@ -159,4 +170,55 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     });
+
+    // Spacing adjustment handlers
+    function debounce(func, wait) {
+        let timeout;
+        return function(...args) {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func.apply(this, args), wait);
+        };
+    }
+
+    function applySpacingAdjustments() {
+        chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+            chrome.storage.sync.get(['lineSpacing', 'letterSpacing', 'wordSpacing'], function(result) {
+                chrome.tabs.sendMessage(tabs[0].id, {
+                    action: 'adjustSpacing',
+                    lineSpacing: result.lineSpacing || 1.5,
+                    letterSpacing: result.letterSpacing || 0,
+                    wordSpacing: result.wordSpacing || 0
+                });
+            });
+        });
+    }
+
+    const debouncedApplySpacing = debounce(applySpacingAdjustments, 100);
+
+    // Line Spacing Slider
+    document.getElementById('lineSpacing').addEventListener('input', function(e) {
+        const value = e.target.value;
+        document.getElementById('lineSpacingValue').textContent = value;
+        chrome.storage.sync.set({ lineSpacing: value });
+        debouncedApplySpacing();
+    });
+
+    // Letter Spacing Slider
+    document.getElementById('letterSpacing').addEventListener('input', function(e) {
+        const value = e.target.value;
+        document.getElementById('letterSpacingValue').textContent = value + 'px';
+        chrome.storage.sync.set({ letterSpacing: value });
+        debouncedApplySpacing();
+    });
+
+    // Word Spacing Slider
+    document.getElementById('wordSpacing').addEventListener('input', function(e) {
+        const value = e.target.value;
+        document.getElementById('wordSpacingValue').textContent = value + 'px';
+        chrome.storage.sync.set({ wordSpacing: value });
+        debouncedApplySpacing();
+    });
+
+    // Apply initial spacing
+    debouncedApplySpacing();
 });
