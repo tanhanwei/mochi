@@ -128,3 +128,23 @@ input:checked + .slider:before {
     color: #2c3e50;
     font-size: 14px;
 }
+
+/* Dropdown Styles */
+.dropdown-container {
+    margin-top: 10px;
+}
+
+.dropdown-container label {
+    display: block;
+    margin-bottom: 5px;
+    color: #2c3e50;
+    font-size: 14px;
+}
+
+#themeSelector {
+    width: 100%;
+    padding: 8px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+}

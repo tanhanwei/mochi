@@ -1,6 +1,62 @@
 let summarizer = null;
 let promptSession = null;
 
+// Theme definitions
+const themes = {
+    default: {
+        backgroundColor: '',
+        textColor: '',
+    },
+    highContrast: {
+        backgroundColor: '#FFFFFF',
+        textColor: '#000000',
+    },
+    highContrastAlt: {
+        backgroundColor: '#000000',
+        textColor: '#FFFFFF',
+    },
+    darkMode: {
+        backgroundColor: '#121212',
+        textColor: '#E0E0E0',
+    },
+    sepia: {
+        backgroundColor: '#F5E9D5',
+        textColor: '#5B4636',
+    },
+    lowBlueLight: {
+        backgroundColor: '#FFF8E1',
+        textColor: '#2E2E2E',
+    },
+    softPastelBlue: {
+        backgroundColor: '#E3F2FD',
+        textColor: '#0D47A1',
+    },
+    softPastelGreen: {
+        backgroundColor: '#F1FFF0',
+        textColor: '#00695C',
+    },
+    creamPaper: {
+        backgroundColor: '#FFFFF0',
+        textColor: '#333333',
+    },
+    grayScale: {
+        backgroundColor: '#F5F5F5',
+        textColor: '#424242',
+    },
+    blueLightFilter: {
+        backgroundColor: '#FFF3E0',
+        textColor: '#4E342E',
+    },
+    highContrastYellowBlack: {
+        backgroundColor: '#000000',
+        textColor: '#FFFF00',
+    },
+    highContrastBlackYellow: {
+        backgroundColor: '#FFFF00',
+        textColor: '#000000',
+    },
+};
+
 // Initialize the AI capabilities
 async function initAICapabilities() {
     logger.log('Starting AI capabilities initialization...');
@@ -528,6 +584,12 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                 toggleOpenDyslexicFont(fontEnabled);
                 break;
                 
+            case "applyTheme":
+                console.log("Applying theme:", request.theme);
+                applyTheme(request.theme);
+                sendResponse({ success: true });
+                break;
+                
             case "getFontState":
                 sendResponse({ fontEnabled: fontEnabled });
                 break;
@@ -757,9 +819,41 @@ function applySpacingAdjustments(lineSpacing, letterSpacing, wordSpacing) {
     document.head.appendChild(style);
 }
 
+// Function to apply selected theme
+function applyTheme(themeName) {
+    const theme = themes[themeName];
+    if (!theme) return;
+
+    const { backgroundColor, textColor } = theme;
+
+    let themeStyle = document.getElementById('theme-style');
+    if (!themeStyle) {
+        themeStyle = document.createElement('style');
+        themeStyle.id = 'theme-style';
+        document.head.appendChild(themeStyle);
+    }
+
+    themeStyle.textContent = `
+        html, body {
+            background-color: ${backgroundColor} !important;
+            color: ${textColor} !important;
+        }
+        body * {
+            background-color: ${backgroundColor} !important;
+            color: ${textColor} !important;
+        }
+    `;
+}
+
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
     ensureInitialized();
+    
+    // Apply saved theme
+    chrome.storage.sync.get(['selectedTheme'], function(result) {
+        const selectedTheme = result.selectedTheme || 'default';
+        applyTheme(selectedTheme);
+    });
     
     // Load and apply initial spacing settings
     chrome.storage.sync.get(['lineSpacing', 'letterSpacing', 'wordSpacing'], function(result) {

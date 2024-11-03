@@ -1,5 +1,8 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Restore toggle and slider states
+    // Restore theme, toggle and slider states
+    chrome.storage.sync.get(['selectedTheme'], function(result) {
+        document.getElementById('themeSelector').value = result.selectedTheme || 'default';
+    });
     chrome.storage.sync.get(['lineSpacing', 'letterSpacing', 'wordSpacing'], function(result) {
         document.getElementById('lineSpacing').value = result.lineSpacing || 1.5;
         document.getElementById('lineSpacingValue').textContent = result.lineSpacing || 1.5;
@@ -219,6 +222,31 @@ document.addEventListener('DOMContentLoaded', function() {
         debouncedApplySpacing();
     });
 
-    // Apply initial spacing
+    // Theme Selector Handler
+    document.getElementById('themeSelector').addEventListener('change', function(e) {
+        const selectedTheme = e.target.value;
+        
+        // Save the selected theme
+        chrome.storage.sync.set({ selectedTheme: selectedTheme });
+        
+        // Send message to content script to apply the theme
+        chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
+            chrome.tabs.sendMessage(tabs[0].id, {
+                action: 'applyTheme',
+                theme: selectedTheme
+            });
+        });
+    });
+
+    // Apply initial spacing and theme
     debouncedApplySpacing();
+    chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
+        chrome.storage.sync.get(['selectedTheme'], function(result) {
+            const selectedTheme = result.selectedTheme || 'default';
+            chrome.tabs.sendMessage(tabs[0].id, {
+                action: 'applyTheme',
+                theme: selectedTheme
+            });
+        });
+    });
 });
