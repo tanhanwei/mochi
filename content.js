@@ -655,6 +655,9 @@ function toggleOpenDyslexicFont(enabled) {
         fontStyle.textContent = `
             body, body * {
                 font-family: 'OpenDyslexic', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif !important;
+                line-height: 1.5;
+                letter-spacing: 0.5px;
+                word-spacing: 3px;
             }
         `;
     } else {
