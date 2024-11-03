@@ -627,44 +627,48 @@ chrome.storage.sync.get(['fontEnabled', 'hoverEnabled'], function(result) {
 function toggleOpenDyslexicFont(enabled) {
     console.log(`${enabled ? 'Applying' : 'Removing'} OpenDyslexic font...`);
     
-    // Add font-face definition if needed
-    if (enabled && !document.getElementById('opendyslexic-font-face')) {
-        const fontFaceStyle = document.createElement('style');
-        fontFaceStyle.id = 'opendyslexic-font-face';
-        fontFaceStyle.textContent = `
-            @font-face {
-                font-family: 'OpenDyslexic';
-                src: url('${chrome.runtime.getURL('fonts/OpenDyslexic-Regular.otf')}') format('opentype');
-                font-weight: normal;
-                font-style: normal;
+    if (enabled) {
+        // Add font-face definition if it doesn't exist
+        if (!document.getElementById('opendyslexic-font-face')) {
+            const fontFaceStyle = document.createElement('style');
+            fontFaceStyle.id = 'opendyslexic-font-face';
+            fontFaceStyle.textContent = `
+                @font-face {
+                    font-family: 'OpenDyslexic';
+                    src: url('${chrome.runtime.getURL('fonts/OpenDyslexic-Regular.otf')}') format('opentype');
+                    font-weight: normal;
+                    font-style: normal;
+                }
+            `;
+            document.head.appendChild(fontFaceStyle);
+        }
+
+        // Create or update style element to apply font to entire page
+        let fontStyle = document.getElementById('opendyslexic-font-style');
+        if (!fontStyle) {
+            fontStyle = document.createElement('style');
+            fontStyle.id = 'opendyslexic-font-style';
+            document.head.appendChild(fontStyle);
+        }
+
+        fontStyle.textContent = `
+            body, body * {
+                font-family: 'OpenDyslexic', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif !important;
             }
         `;
-        document.head.appendChild(fontFaceStyle);
-    }
+    } else {
+        // Remove the font style applied to the entire page
+        const fontStyle = document.getElementById('opendyslexic-font-style');
+        if (fontStyle) {
+            fontStyle.parentNode.removeChild(fontStyle);
+        }
 
-    // Update or create style for simplified text
-    let simplifiedStyle = document.getElementById('simplified-text-style');
-    if (!simplifiedStyle) {
-        simplifiedStyle = document.createElement('style');
-        simplifiedStyle.id = 'simplified-text-style';
-        document.head.appendChild(simplifiedStyle);
+        // Optionally remove the font-face definition
+        const fontFaceStyle = document.getElementById('opendyslexic-font-face');
+        if (fontFaceStyle) {
+            fontFaceStyle.parentNode.removeChild(fontFaceStyle);
+        }
     }
-
-    simplifiedStyle.textContent = enabled ? `
-        .simplified-text {
-            font-family: 'OpenDyslexic', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif !important;
-        }
-        .simplified-text * {
-            font-family: 'OpenDyslexic', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif !important;
-        }
-    ` : `
-        .simplified-text {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif !important;
-        }
-        .simplified-text * {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif !important;
-        }
-    `;
 }
 
 function enableHoverFeature() {
