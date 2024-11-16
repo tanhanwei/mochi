@@ -1,4 +1,3 @@
-let summarizer = null;
 let promptSession = null;
 
 // Theme definitions
@@ -67,12 +66,6 @@ async function initAICapabilities() {
             return { summarizer: null, promptSession: null }; 
         }
 
-        // Initialize summarizer
-        if (self.ai.summarizer) {
-            console.log('Creating summarizer...');
-            summarizer = await self.ai.summarizer.create();
-            console.log('Summarizer initialized successfully');
-        }
 
         // Initialize Prompt API with systemPrompt
         const { defaultTemperature, defaultTopK } = await self.ai.languageModel.capabilities();
@@ -675,7 +668,6 @@ function ensureInitialized() {
         console.log('Content script loaded - starting initialization');
         initializationPromise = initAICapabilities().then(() => {
             console.log('Content script setup complete with capabilities:', {
-                summarizerAvailable: !!summarizer,
                 promptSessionAvailable: !!promptSession
             });
         }).catch(error => {
