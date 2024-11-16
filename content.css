@@ -1,4 +1,34 @@
 
+/* Welcome page styles */
+#welcomePage {
+    text-align: center;
+    padding: 20px;
+}
+
+#welcomePage h1 {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+#welcomePage p {
+    color: #666;
+    margin-bottom: 20px;
+}
+
+#welcomePage button {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#welcomePage button:hover {
+    background-color: #2980b9;
+}
+
 /* Markdown styles */
 .simplified-text {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;

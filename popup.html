@@ -5,9 +5,15 @@
     <link rel="stylesheet" href="popup.css">
 </head>
 <body>
-    <div class="container">
-        <h1>MindMeld</h1>
-        <div class="controls">
+    <div id="welcomePage">
+        <h1>Welcome to MindMeld</h1>
+        <p>Your cognitive accessibility companion</p>
+        <button id="letsBegin">Let's Begin</button>
+    </div>
+    <div id="mainContent" style="display: none;">
+        <div class="container">
+            <h1>MindMeld</h1>
+            <div class="controls">
             <button id="simplifyText">Simplify Text</button>
             
             <!-- Spacing Controls -->
@@ -55,6 +61,8 @@
                     <option value="highContrastYellowBlack">High Contrast (Yellow on Black)</option>
                     <option value="highContrastBlackYellow">High Contrast (Black on Yellow)</option>
                 </select>
+            </div>
+        </div>
             </div>
         </div>
     </div>

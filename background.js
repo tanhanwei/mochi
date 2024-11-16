@@ -1,5 +1,6 @@
 chrome.runtime.onInstalled.addListener(() => {
   console.log('MindMeld extension installed');
+  chrome.storage.sync.set({ isNewUser: true });
 });
 
 

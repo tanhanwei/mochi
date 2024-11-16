@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', function() {
+function initializePopup() {
     // Restore theme, toggle and slider states
     chrome.storage.sync.get(['selectedTheme'], function(result) {
         document.getElementById('themeSelector').value = result.selectedTheme || 'default';
