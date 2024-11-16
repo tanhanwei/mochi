@@ -72,11 +72,11 @@ async function initAICapabilities() {
         promptSession = await self.ai.languageModel.create({
             temperature: defaultTemperature,
             topK: defaultTopK,
-            systemPrompt: `Rewrite text to make it easier to understand for 5 year old kids. You use very very simple language and DO NOT summarize. You keep all proper names, places, and quotes exactly as they are. You preserve paragraph breaks. For regular paragraphs, do not use bullet points if not found in original text. For any lists (numbered, bulleted, or otherwise), preserve the list format but simplify the language of each item. DO NOT write new titles, headers, headings or sub-headings. Respond with the new text only without ANY messages.`
+            systemPrompt: `Rewrite text to make it easier to understand. Use simple language and short sentences. Keep all proper names, places, and quotes exactly as they are. Preserve paragraph breaks and list formats. Do not add or modify headers. Only return the simplified text.`
         });
         console.log('Language Model initialized successfully');
 
-        return { summarizer, promptSession };
+        return { promptSession };
     } catch (error) {
         console.error('Error initializing AI capabilities:', error);
         throw error;
