@@ -1,3 +1,66 @@
+// Text sets and levels
+const guideSets = [
+    {
+        setName: 'Learning and Brain Development',
+        levels: [
+            'The acquisition of advanced vocabulary and linguistic patterns during early childhood demonstrates remarkable neural plasticity, enabling children to effortlessly assimilate complex communication structures through mere exposure to their environment.',
+            'Young children\'s ability to learn language shows how adaptable their brains are, as they can naturally pick up complicated speaking patterns just by listening to the people around them.',
+            'Young children learn new words and speaking patterns very easily because their brains are good at learning from what they hear every day.',
+            'Kids learn to talk by listening to others. Their young brains help them learn words and speaking very easily.'
+        ]
+    },
+    {
+        setName: 'Technology Impact',
+        levels: [
+            'The proliferation of digital technologies has precipitated unprecedented transformations in societal communication paradigms, fundamentally altering interpersonal dynamics across diverse demographic segments.',
+            'The widespread use of digital technology has brought about major changes in how society communicates, affecting how different groups of people interact with each other.',
+            'Digital technology has changed how people in society talk to each other, making communication different for various groups.',
+            'New tech has changed how people talk to each other in our world today.'
+        ]
+    }
+];
+
+const personalizedMessages = {
+    1: `Based on your reading preferences, we'll:\n✨ Keep sophisticated language while adding helpful context\n📚 Use simpler words for specialist terms\n🎯 Maintain detailed information while improving clarity`,
+    2: `Based on your reading preferences, we'll:\n💡 Use clear everyday language that's still detailed\n🔄 Break down complex ideas with simpler words\n📝 Make sentences shorter while keeping them interesting`,
+    3: `Based on your reading preferences, we'll:\n🌟 Use simple, friendly words\n✂️ Break long sentences into shorter ones\n🎨 Explain tricky ideas with simpler words`,
+    4: `Based on your reading preferences, we'll:\n🎯 Use the simplest, clearest words possible\n✨ Keep every sentence short and easy\n🌈 Explain everything like talking to a friend`
+};
+
+let currentSetIndex = 0;
+let currentLevelIndex = 0;
+let userScores = [];
+
+function showCurrentGuideText() {
+    const currentSet = guideSets[currentSetIndex];
+    const currentText = currentSet.levels[currentLevelIndex];
+    document.getElementById('guideText').textContent = currentText;
+}
+
+function calculateAverageScore() {
+    const sum = userScores.reduce((a, b) => a + b, 0);
+    const averageScore = sum / userScores.length;
+    let readingLevel;
+
+    if (averageScore <= 1.75) {
+        readingLevel = 1;
+    } else if (averageScore <= 2.5) {
+        readingLevel = 2;
+    } else if (averageScore <= 3.25) {
+        readingLevel = 3;
+    } else {
+        readingLevel = 4;
+    }
+
+    chrome.storage.sync.set({ readingLevel: readingLevel });
+
+    const message = personalizedMessages[readingLevel];
+    document.getElementById('personalizedMessage').textContent = message;
+
+    document.getElementById('guidePage').style.display = 'none';
+    document.getElementById('personalizedMessagePage').style.display = 'block';
+}
+
 function initializePopup() {
     // Restore theme, toggle and slider states
     chrome.storage.sync.get(['selectedTheme'], function(result) {
@@ -21,25 +84,54 @@ function initializePopup() {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    chrome.storage.sync.get('isNewUser', function(result) {
+    chrome.storage.sync.get(['isNewUser', 'readingLevel'], function(result) {
         if (result.isNewUser === undefined || result.isNewUser) {
-            // Show welcome page
             document.getElementById('welcomePage').style.display = 'block';
-            document.getElementById('mainContent').style.display = 'none';
+        } else if (!result.readingLevel) {
+            document.getElementById('guidePage').style.display = 'block';
+            showCurrentGuideText();
         } else {
-            // Show main content
-            document.getElementById('welcomePage').style.display = 'none';
             document.getElementById('mainContent').style.display = 'block';
             initializePopup();
         }
     });
 
-    // Event listener for "Let's Begin" button
     document.getElementById('letsBegin').addEventListener('click', function() {
-        // Update isNewUser flag
+        document.getElementById('welcomePage').style.display = 'none';
+        document.getElementById('guidePage').style.display = 'block';
+        showCurrentGuideText();
+    });
+
+    document.getElementById('comfortableBtn').addEventListener('click', function() {
+        userScores.push(currentLevelIndex + 1);
+        currentSetIndex++;
+        currentLevelIndex = 0;
+        if (currentSetIndex < guideSets.length) {
+            showCurrentGuideText();
+        } else {
+            calculateAverageScore();
+        }
+    });
+
+    document.getElementById('preferEasierBtn').addEventListener('click', function() {
+        currentLevelIndex++;
+        if (currentLevelIndex < 4) {
+            showCurrentGuideText();
+        } else {
+            userScores.push(currentLevelIndex + 1);
+            currentSetIndex++;
+            currentLevelIndex = 0;
+            if (currentSetIndex < guideSets.length) {
+                showCurrentGuideText();
+            } else {
+                calculateAverageScore();
+            }
+        }
+    });
+
+    document.getElementById('continueBtn').addEventListener('click', function() {
         chrome.storage.sync.set({ isNewUser: false }, function() {
-            // Show main content
-            document.getElementById('welcomePage').style.display = 'none';
+            document.getElementById('personalizedMessagePage').style.display = 'none';
             document.getElementById('mainContent').style.display = 'block';
             initializePopup();
         });

@@ -57,22 +57,39 @@ const themes = {
 };
 
 // Initialize the AI capabilities
+async function getReadingLevel() {
+    return new Promise((resolve) => {
+        chrome.storage.sync.get('readingLevel', function(result) {
+            if (result.readingLevel) {
+                resolve(result.readingLevel);
+            } else {
+                resolve(3); // Default to Level 3
+            }
+        });
+    });
+}
+
 async function initAICapabilities() {
     logger.log('Starting AI capabilities initialization...');
     try {
-        // Check if AI API is available
         if (!self.ai || !self.ai.languageModel) {
             logger.error('AI API is not available');
             return { summarizer: null, promptSession: null }; 
         }
 
+        const readingLevel = await getReadingLevel();
+        const systemPrompts = {
+            1: `Rewrite text while keeping sophisticated language and adding helpful context. Use simpler words for specialist terms when necessary. Maintain detailed information while improving clarity.`,
+            2: `Rewrite text using clear everyday language that's still detailed. Break down complex ideas with simpler words. Make sentences shorter while keeping them interesting.`,
+            3: `Rewrite text using simple, friendly words. Break long sentences into shorter ones. Explain tricky ideas with simpler words.`,
+            4: `Rewrite text using the simplest, clearest words possible. Keep every sentence short and easy. Explain everything like talking to a friend.`
+        };
 
-        // Initialize Prompt API with systemPrompt
         const { defaultTemperature, defaultTopK } = await self.ai.languageModel.capabilities();
         promptSession = await self.ai.languageModel.create({
             temperature: defaultTemperature,
             topK: defaultTopK,
-            systemPrompt: `Rewrite text to make it easier to understand. Use simple language and short sentences. Keep all proper names, places, and quotes exactly as they are. Preserve paragraph breaks and list formats. Do not add or modify headers. Only return the simplified text.`
+            systemPrompt: systemPrompts[readingLevel]
         });
         console.log('Language Model initialized successfully');
 
