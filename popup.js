@@ -18,6 +18,33 @@ function initializePopup() {
         document.getElementById('fontToggle').checked = result.fontEnabled || false;
         document.getElementById('hoverToggle').checked = result.hoverEnabled || false;
     });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    chrome.storage.sync.get('isNewUser', function(result) {
+        if (result.isNewUser === undefined || result.isNewUser) {
+            // Show welcome page
+            document.getElementById('welcomePage').style.display = 'block';
+            document.getElementById('mainContent').style.display = 'none';
+        } else {
+            // Show main content
+            document.getElementById('welcomePage').style.display = 'none';
+            document.getElementById('mainContent').style.display = 'block';
+            initializePopup();
+        }
+    });
+
+    // Event listener for "Let's Begin" button
+    document.getElementById('letsBegin').addEventListener('click', function() {
+        // Update isNewUser flag
+        chrome.storage.sync.set({ isNewUser: false }, function() {
+            // Show main content
+            document.getElementById('welcomePage').style.display = 'none';
+            document.getElementById('mainContent').style.display = 'block';
+            initializePopup();
+        });
+    });
+});
 
     // Button click handlers
     document.getElementById('simplifyText').addEventListener('click', function() {
