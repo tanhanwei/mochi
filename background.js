@@ -1,5 +1,8 @@
-chrome.runtime.onInstalled.addListener(() => {
-  console.log('MindMeld extension installed');
+chrome.runtime.onInstalled.addListener((details) => {
+  if (details.reason === 'install') {
+    console.log('MindMeld extension installed');
+    chrome.storage.sync.remove('readingLevel');
+  }
 });
 
 

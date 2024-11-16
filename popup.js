@@ -1,3 +1,10 @@
+function hideAllPages() {
+    document.getElementById('welcomePage').style.display = 'none';
+    document.getElementById('guidePage').style.display = 'none';
+    document.getElementById('personalizedMessagePage').style.display = 'none';
+    document.getElementById('mainContent').style.display = 'none';
+}
+
 // Text sets and levels
 const guideSets = [
     {
@@ -57,7 +64,7 @@ function calculateAverageScore() {
     const message = personalizedMessages[readingLevel];
     document.getElementById('personalizedMessage').textContent = message;
 
-    document.getElementById('guidePage').style.display = 'none';
+    hideAllPages();
     document.getElementById('personalizedMessagePage').style.display = 'block';
 }
 
@@ -84,6 +91,8 @@ function initializePopup() {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
+    hideAllPages();
+    
     chrome.storage.sync.get('readingLevel', function(result) {
         if (result.readingLevel) {
             document.getElementById('mainContent').style.display = 'block';
@@ -94,7 +103,10 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     document.getElementById('letsBegin').addEventListener('click', function() {
-        document.getElementById('welcomePage').style.display = 'none';
+        hideAllPages();
+        currentSetIndex = 0;
+        currentLevelIndex = 0;
+        userScores = [];
         document.getElementById('guidePage').style.display = 'block';
         showCurrentGuideText();
     });
@@ -127,7 +139,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     document.getElementById('continueBtn').addEventListener('click', function() {
-        document.getElementById('personalizedMessagePage').style.display = 'none';
+        hideAllPages();
         document.getElementById('mainContent').style.display = 'block';
         initializePopup();
     });
