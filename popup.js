@@ -151,7 +151,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (tabs[0] && /^https?:/.test(tabs[0].url)) {
                 chrome.tabs.sendMessage(tabs[0].id, {action: "simplify"}, function(response) {
                     if (chrome.runtime.lastError) {
-                        console.error("Could not send simplify message:", chrome.runtime.lastError);
+                        console.error("Could not send simplify message:", chrome.runtime.lastError.message);
                     }
                 });
             } else {
@@ -184,10 +184,18 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Apply to current tab
         chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-            chrome.tabs.sendMessage(tabs[0].id, {
-                action: 'toggleHover',
-                enabled: enabled
-            });
+            if (tabs[0] && /^https?:/.test(tabs[0].url)) {
+                chrome.tabs.sendMessage(tabs[0].id, {
+                    action: 'toggleHover',
+                    enabled: enabled
+                }, function(response) {
+                    if (chrome.runtime.lastError) {
+                        console.error('Could not toggle hover:', chrome.runtime.lastError.message);
+                    }
+                });
+            } else {
+                console.warn("Active tab is not a valid web page. Cannot toggle hover.");
+            }
         });
     });
 
@@ -196,11 +204,19 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Request current font state when popup opens
     chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-        chrome.tabs.sendMessage(tabs[0].id, { action: 'getFontState' }, function(response) {
-            if (response && response.fontEnabled !== undefined) {
-                fontToggle.checked = response.fontEnabled;
-            }
-        });
+        if (tabs[0] && /^https?:/.test(tabs[0].url)) {
+            chrome.tabs.sendMessage(tabs[0].id, { action: 'getFontState' }, function(response) {
+                if (chrome.runtime.lastError) {
+                    console.error("Could not get font state:", chrome.runtime.lastError.message);
+                    fontToggle.checked = false; // Default to unchecked
+                } else if (response && response.fontEnabled !== undefined) {
+                    fontToggle.checked = response.fontEnabled;
+                }
+            });
+        } else {
+            console.warn("Active tab is not a valid web page. Cannot get font state.");
+            fontToggle.checked = false; // Default to unchecked
+        }
     });
 
     fontToggle.addEventListener('change', function(e) {
@@ -211,10 +227,18 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Apply to current tab
         chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-            chrome.tabs.sendMessage(tabs[0].id, {
-                action: 'toggleFont',
-                enabled: enabled
-            });
+            if (tabs[0] && /^https?:/.test(tabs[0].url)) {
+                chrome.tabs.sendMessage(tabs[0].id, {
+                    action: 'toggleFont',
+                    enabled: enabled
+                }, function(response) {
+                    if (chrome.runtime.lastError) {
+                        console.error('Could not toggle font:', chrome.runtime.lastError.message);
+                    }
+                });
+            } else {
+                console.warn("Active tab is not a valid web page. Cannot toggle font.");
+            }
         });
     });
 
@@ -229,14 +253,22 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function applySpacingAdjustments() {
         chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-            chrome.storage.sync.get(['lineSpacing', 'letterSpacing', 'wordSpacing'], function(result) {
-                chrome.tabs.sendMessage(tabs[0].id, {
-                    action: 'adjustSpacing',
-                    lineSpacing: result.lineSpacing || 1.5,
-                    letterSpacing: result.letterSpacing || 0,
-                    wordSpacing: result.wordSpacing || 0
+            if (tabs[0] && /^https?:/.test(tabs[0].url)) {
+                chrome.storage.sync.get(['lineSpacing', 'letterSpacing', 'wordSpacing'], function(result) {
+                    chrome.tabs.sendMessage(tabs[0].id, {
+                        action: 'adjustSpacing',
+                        lineSpacing: result.lineSpacing || 1.5,
+                        letterSpacing: result.letterSpacing || 0,
+                        wordSpacing: result.wordSpacing || 0
+                    }, function(response) {
+                        if (chrome.runtime.lastError) {
+                            console.error('Could not adjust spacing:', chrome.runtime.lastError.message);
+                        }
+                    });
                 });
-            });
+            } else {
+                console.warn("Active tab is not a valid web page. Cannot adjust spacing.");
+            }
         });
     }
 
@@ -285,11 +317,19 @@ document.addEventListener('DOMContentLoaded', function() {
     // Apply initial spacing and theme
     debouncedApplySpacing();
     chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
-        chrome.storage.sync.get(['selectedTheme'], function(result) {
-            const selectedTheme = result.selectedTheme || 'default';
-            chrome.tabs.sendMessage(tabs[0].id, {
-                action: 'applyTheme',
-                theme: selectedTheme
+        if (tabs[0] && /^https?:/.test(tabs[0].url)) {
+            chrome.storage.sync.get(['selectedTheme'], function(result) {
+                const selectedTheme = result.selectedTheme || 'default';
+                chrome.tabs.sendMessage(tabs[0].id, {
+                    action: 'applyTheme',
+                    theme: selectedTheme
+                }, function(response) {
+                    if (chrome.runtime.lastError) {
+                        console.error('Could not apply theme:', chrome.runtime.lastError.message);
+                    }
+                });
             });
-        });
+        } else {
+            console.warn("Active tab is not a valid web page. Cannot apply theme.");
+        }
     });
