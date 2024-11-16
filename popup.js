@@ -168,11 +168,15 @@ document.addEventListener('DOMContentLoaded', function() {
         if (tabs[0] && /^https?:/.test(tabs[0].url)) {
             chrome.tabs.sendMessage(tabs[0].id, { action: 'getHoverState' }, function(response) {
                 if (chrome.runtime.lastError) {
-                    console.error("Could not get hover state:", chrome.runtime.lastError);
+                    console.error("Could not get hover state:", chrome.runtime.lastError.message);
+                    hoverToggle.checked = false; // Default to unchecked
                 } else if (response && response.hoverEnabled !== undefined) {
                     hoverToggle.checked = response.hoverEnabled;
                 }
             });
+        } else {
+            console.warn("Active tab is not a valid web page. Cannot get hover state.");
+            hoverToggle.checked = false; // Default to unchecked
         }
     });
 
