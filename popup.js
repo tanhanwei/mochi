@@ -84,15 +84,12 @@ function initializePopup() {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    chrome.storage.sync.get(['isNewUser', 'readingLevel'], function(result) {
-        if (result.isNewUser === undefined || result.isNewUser) {
-            document.getElementById('welcomePage').style.display = 'block';
-        } else if (!result.readingLevel) {
-            document.getElementById('guidePage').style.display = 'block';
-            showCurrentGuideText();
-        } else {
+    chrome.storage.sync.get('readingLevel', function(result) {
+        if (result.readingLevel) {
             document.getElementById('mainContent').style.display = 'block';
             initializePopup();
+        } else {
+            document.getElementById('welcomePage').style.display = 'block';
         }
     });
 
@@ -130,18 +127,24 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     document.getElementById('continueBtn').addEventListener('click', function() {
-        chrome.storage.sync.set({ isNewUser: false }, function() {
-            document.getElementById('personalizedMessagePage').style.display = 'none';
-            document.getElementById('mainContent').style.display = 'block';
-            initializePopup();
-        });
+        document.getElementById('personalizedMessagePage').style.display = 'none';
+        document.getElementById('mainContent').style.display = 'block';
+        initializePopup();
     });
 });
 
     // Button click handlers
     document.getElementById('simplifyText').addEventListener('click', function() {
         chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-            chrome.tabs.sendMessage(tabs[0].id, {action: "simplify"});
+            if (tabs[0] && /^https?:/.test(tabs[0].url)) {
+                chrome.tabs.sendMessage(tabs[0].id, {action: "simplify"}, function(response) {
+                    if (chrome.runtime.lastError) {
+                        console.error("Could not send simplify message:", chrome.runtime.lastError);
+                    }
+                });
+            } else {
+                console.warn("Active tab is not a valid web page.");
+            }
         });
     });
 
@@ -150,11 +153,15 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Request current hover state when popup opens
     chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-        chrome.tabs.sendMessage(tabs[0].id, { action: 'getHoverState' }, function(response) {
-            if (response && response.hoverEnabled !== undefined) {
-                hoverToggle.checked = response.hoverEnabled;
-            }
-        });
+        if (tabs[0] && /^https?:/.test(tabs[0].url)) {
+            chrome.tabs.sendMessage(tabs[0].id, { action: 'getHoverState' }, function(response) {
+                if (chrome.runtime.lastError) {
+                    console.error("Could not get hover state:", chrome.runtime.lastError);
+                } else if (response && response.hoverEnabled !== undefined) {
+                    hoverToggle.checked = response.hoverEnabled;
+                }
+            });
+        }
     });
 
     hoverToggle.addEventListener('change', function(e) {
