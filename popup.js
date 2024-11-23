@@ -239,7 +239,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 loader.style.display = 'none';
             }
         });
-    });
 
     // Hover to show original toggle handler
     const hoverToggle = document.getElementById('hoverToggle');
