@@ -297,19 +297,21 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function applySpacingAdjustments() {
+        const lineSpacing = document.getElementById('lineSpacing').value;
+        const letterSpacing = document.getElementById('letterSpacing').value;
+        const wordSpacing = document.getElementById('wordSpacing').value;
+
         chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
             if (tabs[0] && /^https?:/.test(tabs[0].url)) {
-                chrome.storage.sync.get(['lineSpacing', 'letterSpacing', 'wordSpacing'], function(result) {
-                    chrome.tabs.sendMessage(tabs[0].id, {
-                        action: 'adjustSpacing',
-                        lineSpacing: result.lineSpacing || 1.5,
-                        letterSpacing: result.letterSpacing || 0,
-                        wordSpacing: result.wordSpacing || 0
-                    }, function(response) {
-                        if (chrome.runtime.lastError) {
-                            console.error('Could not adjust spacing:', chrome.runtime.lastError.message);
-                        }
-                    });
+                chrome.tabs.sendMessage(tabs[0].id, {
+                    action: 'adjustSpacing',
+                    lineSpacing: lineSpacing,
+                    letterSpacing: letterSpacing,
+                    wordSpacing: wordSpacing
+                }, function(response) {
+                    if (chrome.runtime.lastError) {
+                        console.error('Could not adjust spacing:', chrome.runtime.lastError.message);
+                    }
                 });
             } else {
                 console.warn("Active tab is not a valid web page. Cannot adjust spacing.");
