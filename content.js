@@ -115,9 +115,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                         return;
                     }
 
-                    // Send success response after initialization
-                    sendResponse({success: true});
-                
                 console.log('Finding main content element...');
                 
                 console.log('Prompt API status:', promptSession ? 'initialized' : 'not initialized');
@@ -519,8 +516,12 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                     notification.style.zIndex = '10000';
                     document.body.appendChild(notification);
                     setTimeout(() => notification.remove(), 3000);
+                    
+                    // Only send success response after everything is complete
+                    sendResponse({success: true});
                 } catch (error) {
                     console.error('Error simplifying content:', error);
+                    sendResponse({success: false, error: error.message});
                 }
                 break;
                 
