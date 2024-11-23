@@ -740,60 +740,6 @@ function applyTheme(themeName) {
     `;
 }
 
-// Get references to the button and its elements
-const simplifyButton = document.getElementById('simplifyText');
-const simplifyButtonText = document.getElementById('simplifyButtonText');
-const loader = document.getElementById('loader');
-
-// Button click handler
-simplifyButton.addEventListener('click', function() {
-    // Disable the button
-    simplifyButton.disabled = true;
-
-    // Update the button text and show loader
-    simplifyButtonText.textContent = 'Simplifying Text...';
-    loader.style.display = 'inline-block';
-
-    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-        if (tabs[0] && /^https?:/.test(tabs[0].url)) {
-            chrome.tabs.sendMessage(tabs[0].id, {action: "simplify"}, function(response) {
-                if (chrome.runtime.lastError) {
-                    console.error("Could not send simplify message:", chrome.runtime.lastError.message);
-
-                    // Re-enable the button and reset text and loader
-                    simplifyButton.disabled = false;
-                    simplifyButtonText.textContent = 'Simplify Text';
-                    loader.style.display = 'none';
-                } else {
-                    if(response && response.success) {
-                        // Simplification succeeded
-                        simplifyButtonText.textContent = 'Done!';
-                    } else {
-                        // Handle error
-                        simplifyButtonText.textContent = 'Error!';
-                        console.error("Simplification failed:", response.error);
-                    }
-
-                    // Hide the loader
-                    loader.style.display = 'none';
-
-                    // After a delay, reset the button
-                    setTimeout(function() {
-                        simplifyButton.disabled = false;
-                        simplifyButtonText.textContent = 'Simplify Text';
-                    }, 2000);
-                }
-            });
-        } else {
-            console.warn("Active tab is not a valid web page.");
-
-            // Re-enable the button and reset text and loader
-            simplifyButton.disabled = false;
-            simplifyButtonText.textContent = 'Simplify Text';
-            loader.style.display = 'none';
-        }
-    });
-});
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
