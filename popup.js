@@ -319,28 +319,51 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const debouncedApplySpacing = debounce(applySpacingAdjustments, 100);
 
+    // Debounce function implementation
+    function debounce(func, wait) {
+        let timeout;
+        return function(...args) {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func.apply(this, args), wait);
+        };
+    }
+
+    // Define a debounced function to save settings and apply spacing
+    const debouncedSaveAndApplySpacing = debounce(function() {
+        const lineSpacing = document.getElementById('lineSpacing').value;
+        const letterSpacing = document.getElementById('letterSpacing').value;
+        const wordSpacing = document.getElementById('wordSpacing').value;
+
+        // Save the current values to storage
+        chrome.storage.sync.set({
+            lineSpacing: lineSpacing,
+            letterSpacing: letterSpacing,
+            wordSpacing: wordSpacing
+        });
+
+        // Apply the spacing adjustments
+        applySpacingAdjustments();
+    }, 200);
+
     // Line Spacing Slider
     document.getElementById('lineSpacing').addEventListener('input', function(e) {
         const value = e.target.value;
         document.getElementById('lineSpacingValue').textContent = value;
-        chrome.storage.sync.set({ lineSpacing: value });
-        debouncedApplySpacing();
+        debouncedSaveAndApplySpacing();
     });
 
     // Letter Spacing Slider
     document.getElementById('letterSpacing').addEventListener('input', function(e) {
         const value = e.target.value;
         document.getElementById('letterSpacingValue').textContent = value + 'px';
-        chrome.storage.sync.set({ letterSpacing: value });
-        debouncedApplySpacing();
+        debouncedSaveAndApplySpacing();
     });
 
     // Word Spacing Slider
     document.getElementById('wordSpacing').addEventListener('input', function(e) {
         const value = e.target.value;
         document.getElementById('wordSpacingValue').textContent = value + 'px';
-        chrome.storage.sync.set({ wordSpacing: value });
-        debouncedApplySpacing();
+        debouncedSaveAndApplySpacing();
     });
 
     // Theme Selector Handler
