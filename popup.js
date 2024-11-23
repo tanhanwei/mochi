@@ -69,6 +69,16 @@ function calculateAverageScore() {
 }
 
 function initializePopup() {
+    // Restore selected simplification level
+    chrome.storage.sync.get(['simplificationLevel'], function(result) {
+        const level = result.simplificationLevel || '3'; // Default to '3' for "Mid"
+        const button = document.querySelector(`.simplification-button[data-level="${level}"]`);
+        if (button) {
+            document.querySelectorAll('.simplification-button').forEach(btn => btn.classList.remove('selected'));
+            button.classList.add('selected');
+        }
+    });
+
     // Restore theme, toggle and slider states
     chrome.storage.sync.get(['selectedTheme'], function(result) {
         document.getElementById('themeSelector').value = result.selectedTheme || 'default';

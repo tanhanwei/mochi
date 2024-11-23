@@ -746,6 +746,19 @@ function applyTheme(themeName) {
 document.addEventListener('DOMContentLoaded', () => {
     ensureInitialized();
     
+    // Simplification level buttons functionality
+    document.querySelectorAll('.simplification-button').forEach(button => {
+        button.addEventListener('click', function() {
+            // Remove 'selected' class from all buttons
+            document.querySelectorAll('.simplification-button').forEach(btn => btn.classList.remove('selected'));
+            // Add 'selected' class to the clicked button
+            this.classList.add('selected');
+            // Save the selected level to storage
+            const selectedLevel = this.getAttribute('data-level');
+            chrome.storage.sync.set({ simplificationLevel: selectedLevel });
+        });
+    });
+    
     // Apply saved theme
     chrome.storage.sync.get(['selectedTheme'], function(result) {
         const selectedTheme = result.selectedTheme || 'default';

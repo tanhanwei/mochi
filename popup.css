@@ -103,6 +103,12 @@ button:hover {
     background-color: #95a5a6;
 }
 
+/* Selected state for simplification buttons */
+.simplification-button.selected {
+    background-color: #3498db;
+    color: white;
+}
+
 /* Ensure buttons in the row have equal width */
 .button-row .simplification-button {
     flex-basis: calc(20% - 4px); /* 5 buttons, so 20% each minus some gap */
