@@ -114,6 +114,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                         sendResponse({success: false, error: 'Prompt API not available'});
                         return;
                     }
+
+                    // Send success response after initialization
+                    sendResponse({success: true});
                 
                 console.log('Finding main content element...');
                 
