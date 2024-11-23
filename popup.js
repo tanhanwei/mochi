@@ -200,21 +200,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-    // Get references to the button and its elements
-    const simplifyButton = document.getElementById('simplifyText');
-    const simplifyButtonText = document.getElementById('simplifyButtonText');
-    const loader = document.getElementById('loader');
-
-    // Button click handler
-    simplifyButton.addEventListener('click', function() {
-        // Disable the button
-        simplifyButton.disabled = true;
-
-        // Update the button text and show loader
-        simplifyButtonText.textContent = 'Simplifying Text...';
-        loader.style.display = 'inline-block';
-
-        chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
             if (tabs[0] && /^https?:/.test(tabs[0].url)) {
                 chrome.tabs.sendMessage(tabs[0].id, {action: "simplify"}, function(response) {
                     if (chrome.runtime.lastError) {
