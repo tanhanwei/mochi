@@ -369,10 +369,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
                         // Handle paragraph count mismatch
                         if (simplifiedParagraphs.length !== originalParagraphs.length) {
-                            console.warn('Mismatch in paragraph counts:', {
-                                original: originalParagraphs.length,
-                                simplified: simplifiedParagraphs.length
-                            });
+                            console.log(`Mismatch in paragraph counts: original=${originalParagraphs.length}, simplified=${simplifiedParagraphs.length}`);
                             
                             // If we got more simplified paragraphs than original, trim the excess
                             if (simplifiedParagraphs.length > originalParagraphs.length) {
