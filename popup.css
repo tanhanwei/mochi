@@ -64,6 +64,27 @@ button:hover {
     background-color: #2980b9;
 }
 
+/* Loader Animation */
+.loader {
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid #ffffff;
+    border-right: 2px solid #ffffff;
+    border-bottom: 2px solid #ffffff;
+    border-left: 2px solid #3498db;
+    border-radius: 50%;
+    width: 14px;
+    height: 14px;
+    animation: spin 1s linear infinite;
+    display: inline-block;
+    vertical-align: middle;
+    margin-left: 8px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
 /* Toggle Switch Styles */
 .toggle-container {
     display: flex;
