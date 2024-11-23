@@ -64,6 +64,50 @@ button:hover {
     background-color: #2980b9;
 }
 
+/* Styles for the Simplification Level section */
+.simplification-level {
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.simplification-level h2 {
+    margin: 0 0 10px;
+    font-size: 18px;
+    color: #2c3e50;
+}
+
+.button-row {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+.simplification-button {
+    flex: 1;
+    padding: 8px;
+    background-color: #ecf0f1;
+    color: #2c3e50;
+    border: none;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.simplification-button:hover {
+    background-color: #bdc3c7;
+}
+
+.simplification-button:active {
+    background-color: #95a5a6;
+}
+
+/* Ensure buttons in the row have equal width */
+.button-row .simplification-button {
+    flex-basis: calc(20% - 4px); /* 5 buttons, so 20% each minus some gap */
+}
+
 /* Loader Animation */
 .loader {
     border: 2px solid #f3f3f3;
