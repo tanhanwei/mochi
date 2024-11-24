@@ -44,7 +44,7 @@ function showCurrentGuideText() {
     document.getElementById('guideText').textContent = currentText;
 }
 
-function calculateAverageScore() {
+async function calculateAverageScore() {
     const sum = userScores.reduce((a, b) => a + b, 0);
     const averageScore = sum / userScores.length;
     let readingLevel;
@@ -59,7 +59,7 @@ function calculateAverageScore() {
         readingLevel = 4;
     }
 
-    chrome.storage.sync.set({ readingLevel: readingLevel });
+    await new Promise(resolve => chrome.storage.sync.set({ readingLevel: readingLevel }, resolve));
 
     // Get the optimization mode from storage
     const { optimizeFor = 'general' } = await new Promise(resolve => 
