@@ -79,10 +79,24 @@ async function initAICapabilities() {
 
         const readingLevel = await getReadingLevel();
         const systemPrompts = {
-            1: `Rewrite text while keeping sophisticated language and adding helpful context. Use simpler words for specialist terms when necessary. Maintain detailed information while improving clarity.`,
-            2: `Rewrite text using clear everyday language that's still detailed. Break down complex ideas with simpler words. Make sentences shorter while keeping them interesting.`,
-            3: `Rewrite text using simple, friendly words. Break long sentences into shorter ones. Explain tricky ideas with simpler words.`,
-            4: `Rewrite text using the simplest, clearest words possible. Keep every sentence short and easy. Explain everything like talking to a friend.`
+            general: {
+                1: `Rewrite text while keeping sophisticated language and adding helpful context. Use simpler words for specialist terms when necessary. Maintain detailed information while improving clarity.`,
+                2: `Rewrite text using clear everyday language that's still detailed. Break down complex ideas with simpler words. Make sentences shorter while keeping them interesting.`,
+                3: `Rewrite text using simple, friendly words. Break long sentences into shorter ones. Explain tricky ideas with simpler words.`,
+                4: `Rewrite text using the simplest, clearest words possible. Keep every sentence short and easy. Explain everything like talking to a friend.`
+            },
+            focus: {
+                1: `Rewrite the text to enhance focus and attention for the reader. Use concise sentences, bullet points where appropriate, and highlight key information. Keep sophisticated language while improving clarity.`,
+                2: `Simplify the text to help with focus and attention. Use clear language, shorter sentences, and break down complex ideas. Use lists and headings to organize information.`,
+                3: `Make the text easier to focus on by using simple words and short sentences. Highlight important points and use formatting to guide the reader's attention.`,
+                4: `Rewrite the text to be as clear and attention-friendly as possible. Use very simple words and very short sentences. Organize information with bullet points and headings.`
+            },
+            processing: {
+                1: `Rewrite the text to support reading processing challenges. Clarify complex sentences while maintaining sophisticated language. Provide definitions for specialist terms when necessary.`,
+                2: `Simplify the text to aid in reading processing. Use clear, everyday language and shorter sentences. Break down complex concepts into simpler ideas.`,
+                3: `Make the text easier to process by using simple words and short sentences. Explain difficult ideas in an accessible way.`,
+                4: `Rewrite the text to be as easy to read as possible. Use the simplest words and very short sentences. Explain everything clearly, step by step.`
+            }
         };
 
         const { defaultTemperature, defaultTopK } = await self.ai.languageModel.capabilities();

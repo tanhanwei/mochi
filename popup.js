@@ -61,6 +61,10 @@ function calculateAverageScore() {
 
     chrome.storage.sync.set({ readingLevel: readingLevel });
 
+    // Get the optimization mode from storage
+    const { optimizeFor = 'general' } = await new Promise(resolve => 
+        chrome.storage.sync.get(['optimizeFor'], resolve)
+    );
     const message = personalizedMessages[readingLevel];
     document.getElementById('personalizedMessage').textContent = message;
 
@@ -70,13 +74,16 @@ function calculateAverageScore() {
 
 function initializePopup() {
     // Restore selected simplification level
-    chrome.storage.sync.get(['simplificationLevel'], function(result) {
+    chrome.storage.sync.get(['simplificationLevel', 'optimizeFor'], function(result) {
         const level = result.simplificationLevel || '3'; // Default to '3' for "Mid"
         const button = document.querySelector(`.simplification-button[data-level="${level}"]`);
         if (button) {
             document.querySelectorAll('.simplification-button').forEach(btn => btn.classList.remove('selected'));
             button.classList.add('selected');
         }
+        
+        // Restore optimize for selection
+        document.getElementById('optimizeSelector').value = result.optimizeFor || 'general';
     });
 
     // Restore theme, toggle and slider states
@@ -157,6 +164,11 @@ simplifyButton.addEventListener('click', function() {
 
 document.addEventListener('DOMContentLoaded', function() {
     hideAllPages();
+    
+    // Handle optimize for dropdown changes
+    document.getElementById('optimizeSelector').addEventListener('change', function(e) {
+        chrome.storage.sync.set({ optimizeFor: e.target.value });
+    });
     
     chrome.storage.sync.get('readingLevel', function(result) {
         if (result.readingLevel) {

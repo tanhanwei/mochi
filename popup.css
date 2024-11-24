@@ -212,6 +212,7 @@ input:checked + .slider:before {
     font-size: 14px;
 }
 
+#optimizeSelector,
 #themeSelector {
     width: 100%;
     padding: 8px;
