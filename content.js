@@ -628,13 +628,12 @@ async function loadSystemPrompts() {
 
 // Initialize AI capabilities when content script loads
 let initializationPromise = null;
-let promptSession = null;
-
 // Track feature states
 let fontEnabled = false;
 let hoverEnabled = false;
 let simplifiedElements = []; // Array to track simplified elements
 let isSimplifying = false; // Flag to track simplification in progress
+let promptSession = null; // Single declaration of promptSession
 
 // Load feature states from storage when script loads
 chrome.storage.sync.get(['fontEnabled', 'hoverEnabled'], function(result) {
