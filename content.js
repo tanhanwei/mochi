@@ -354,10 +354,16 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                                     systemPrompt: `You are a helpful assistant that rewrites text to make it easier to understand for those with ADHD. You use simple language and short sentences. You keep all proper names, places, and quotes exactly as they are. You preserve paragraph breaks. You keep the same basic structure but make it clearer.`
                                 });
                                 
+                                // Log the prompts before sending
+                                logPrompt(promptSession.systemPrompt, chunkText);
+
                                 const stream = await promptSession.promptStreaming(chunkText);
                                 for await (const chunk of stream) {
                                     simplifiedText = chunk.trim();
                                 }
+                                
+                                // Log the result
+                                console.log('Simplified Result:', simplifiedText.substring(0, 200) + (simplifiedText.length > 200 ? '...' : ''));
                                 
                                 if (simplifiedText && simplifiedText.trim().length > 0) {
                                     console.log(`Successfully simplified text on attempt ${attempts + 1}`);
@@ -602,6 +608,12 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     return true; // Keep the message channel open for async response
 });
 
+
+// Logging function for prompts
+function logPrompt(systemPrompt, userPrompt) {
+    console.log('System Prompt:', systemPrompt);
+    console.log('User Prompt:', userPrompt.substring(0, 200) + (userPrompt.length > 200 ? '...' : ''));
+}
 
 // Initialize AI capabilities when content script loads
 let initializationPromise = null;
