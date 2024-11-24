@@ -1,4 +1,5 @@
 let promptSession = null;
+let systemPrompt = null; // Store systemPrompt globally
 
 // Theme definitions
 const themes = {
@@ -98,8 +99,8 @@ async function initAICapabilities() {
             });
         });
 
-        // Select the appropriate system prompt
-        const systemPrompt = systemPrompts[optimizeFor][readingLevel];
+        // Select the appropriate system prompt and store globally
+        systemPrompt = systemPrompts[optimizeFor][readingLevel];
         console.log('Selected systemPrompt:', systemPrompt);
 
         if (!systemPrompt) {
@@ -358,7 +359,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                                 await initAICapabilities();
                                 
                                 // Log the prompts before sending
-                                logPrompt(promptSession.systemPrompt, chunkText);
+                                logPrompt(chunkText);
 
                                 const stream = await promptSession.promptStreaming(chunkText);
                                 for await (const chunk of stream) {
@@ -613,7 +614,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
 
 // Logging function for prompts
-function logPrompt(systemPrompt, userPrompt) {
+function logPrompt(userPrompt) {
     if (!systemPrompt) {
         console.error('System Prompt is undefined.');
     } else {
