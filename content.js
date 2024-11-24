@@ -633,6 +633,7 @@ async function loadSystemPrompts() {
 
 // Initialize AI capabilities when content script loads
 let initializationPromise = null;
+let promptSession = null;
 
 // Track feature states
 let fontEnabled = false;
