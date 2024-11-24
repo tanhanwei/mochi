@@ -32,6 +32,8 @@ chrome.runtime.onInstalled.addListener((details) => {
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.action === 'getSystemPrompts') {
+        console.log('Received getSystemPrompts message in background script');
+        console.log('systemPrompts:', systemPrompts);
         sendResponse({ success: true, prompts: systemPrompts });
         return true;
     }

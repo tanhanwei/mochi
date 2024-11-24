@@ -60,40 +60,48 @@ const themes = {
 async function getReadingLevel() {
     return new Promise((resolve) => {
         chrome.storage.sync.get('readingLevel', function(result) {
+            let level = '3'; // Default to Level '3'
             if (result.readingLevel) {
-                resolve(result.readingLevel.toString());
-            } else {
-                resolve('3'); // Default to Level '3'
+                level = result.readingLevel.toString();
             }
+            console.log('Retrieved reading level:', level);
+            resolve(level);
         });
     });
 }
 
 async function initAICapabilities() {
-    logger.log('Starting AI capabilities initialization...');
+    console.log('Starting AI capabilities initialization...');
     try {
         if (!self.ai || !self.ai.languageModel) {
-            logger.error('AI API is not available');
+            console.error('AI API is not available');
             return { summarizer: null, promptSession: null }; 
         }
 
         // Load system prompts
         const systemPrompts = await loadSystemPrompts();
+        console.log('Loaded systemPrompts:', systemPrompts);
+
         if (!systemPrompts) {
             throw new Error('Failed to load system prompts.');
         }
 
         const readingLevel = await getReadingLevel();
+        console.log('User reading level:', readingLevel);
 
         // Retrieve the optimization mode from storage
         const optimizeFor = await new Promise((resolve) => {
             chrome.storage.sync.get(['optimizeFor'], (result) => {
-                resolve(result.optimizeFor || 'general');
+                const mode = result.optimizeFor || 'general';
+                console.log('Optimization mode:', mode);
+                resolve(mode);
             });
         });
 
         // Select the appropriate system prompt
         const systemPrompt = systemPrompts[optimizeFor][readingLevel];
+        console.log('Selected systemPrompt:', systemPrompt);
+
         if (!systemPrompt) {
             throw new Error('System prompt is undefined. Check if the prompts are correctly loaded and user preferences are valid.');
         }
@@ -616,16 +624,21 @@ function logPrompt(systemPrompt, userPrompt) {
 
 // Load system prompts from background script
 async function loadSystemPrompts() {
+    console.log('Attempting to load system prompts from background script');
     return new Promise((resolve, reject) => {
         chrome.runtime.sendMessage({ action: 'getSystemPrompts' }, (response) => {
             if (chrome.runtime.lastError) {
                 console.error('Error sending message to background script:', chrome.runtime.lastError);
                 reject(chrome.runtime.lastError);
-            } else if (response && response.success) {
-                resolve(response.prompts);
             } else {
-                console.error('Error loading system prompts:', response.error);
-                reject(new Error(response.error));
+                console.log('Received response from background script:', response);
+                if (response && response.success) {
+                    console.log('Successfully loaded system prompts:', response.prompts);
+                    resolve(response.prompts);
+                } else {
+                    console.error('Error loading system prompts:', response.error);
+                    reject(new Error(response.error));
+                }
             }
         });
     });
