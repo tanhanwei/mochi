@@ -5,8 +5,18 @@ chrome.runtime.onInstalled.addListener((details) => {
   }
 });
 
-
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  // Messages will be handled by content.js
+  if (request.action === 'getSystemPrompts') {
+    fetch(chrome.runtime.getURL('systemPrompts.json'))
+      .then(response => response.json())
+      .then(data => {
+        sendResponse({ success: true, prompts: data });
+      })
+      .catch(error => {
+        console.error('Error fetching systemPrompts.json:', error);
+        sendResponse({ success: false, error: error.message });
+      });
+    return true;
+  }
   return true;
 });

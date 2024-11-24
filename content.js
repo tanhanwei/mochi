@@ -79,6 +79,9 @@ async function initAICapabilities() {
 
         // Load system prompts
         const systemPrompts = await loadSystemPrompts();
+        if (!systemPrompts) {
+            throw new Error('Failed to load system prompts.');
+        }
 
         const readingLevel = await getReadingLevel();
 
@@ -611,20 +614,21 @@ function logPrompt(systemPrompt, userPrompt) {
     console.log('User Prompt:', userPrompt.substring(0, 200) + (userPrompt.length > 200 ? '...' : ''));
 }
 
-// Load system prompts from JSON file
+// Load system prompts from background script
 async function loadSystemPrompts() {
-    const url = chrome.runtime.getURL('systemPrompts.json');
-    try {
-        const response = await fetch(url);
-        if (!response.ok) {
-            throw new Error(`Failed to load systemPrompts.json: ${response.statusText}`);
-        }
-        const data = await response.json();
-        return data;
-    } catch (error) {
-        console.error('Error loading system prompts:', error);
-        throw error;
-    }
+    return new Promise((resolve, reject) => {
+        chrome.runtime.sendMessage({ action: 'getSystemPrompts' }, (response) => {
+            if (chrome.runtime.lastError) {
+                console.error('Error sending message to background script:', chrome.runtime.lastError);
+                reject(chrome.runtime.lastError);
+            } else if (response && response.success) {
+                resolve(response.prompts);
+            } else {
+                console.error('Error loading system prompts:', response.error);
+                reject(new Error(response.error));
+            }
+        });
+    });
 }
 
 // Initialize AI capabilities when content script loads
