@@ -26,7 +26,7 @@
     "run_at": "document_start"
   }],
   "web_accessible_resources": [{
-    "resources": ["fonts/*", "systemPrompts.json"],
+    "resources": ["fonts/*"],
     "matches": ["<all_urls>"]
   }],
   "options_page": "options.html"
