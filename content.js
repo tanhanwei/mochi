@@ -342,13 +342,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                         
                         while (attempts < maxAttempts) {
                             try {
-                                // Reinitialize the Prompt API before each attempt
-                                const { defaultTemperature, defaultTopK } = await self.ai.languageModel.capabilities();
-                                promptSession = await self.ai.languageModel.create({
-                                    temperature: defaultTemperature,
-                                    topK: defaultTopK,
-                                    systemPrompt: `You are a helpful assistant that rewrites text to make it easier to understand for those with ADHD. You use simple language and short sentences. You keep all proper names, places, and quotes exactly as they are. You preserve paragraph breaks. You keep the same basic structure but make it clearer.`
-                                });
+                                // Reinitialize the Prompt API before each attempt using initAICapabilities()
+                                await initAICapabilities();
                                 
                                 // Log the prompts before sending
                                 logPrompt(promptSession.systemPrompt, chunkText);
