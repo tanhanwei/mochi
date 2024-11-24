@@ -177,6 +177,18 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                     return;
                 }
 
+                // Restore original content if previously simplified
+                const previouslySimplifiedElements = mainContent.querySelectorAll('[data-original-html]');
+                previouslySimplifiedElements.forEach(el => {
+                    const originalHTML = el.getAttribute('data-original-html');
+                    // Create a temporary container to parse the original HTML
+                    const tempDiv = document.createElement('div');
+                    tempDiv.innerHTML = originalHTML;
+                    const originalElement = tempDiv.firstChild;
+                    // Replace the simplified element with the original element
+                    el.parentNode.replaceChild(originalElement, el);
+                });
+
                 console.log('Found main content element:', {
                     tagName: mainContent.tagName,
                     className: mainContent.className,
@@ -468,10 +480,19 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                             `;
                             document.head.appendChild(simplifiedStyles);
                             newElement.classList.add('simplified-text');
+                            // Store the original HTML content if it's not already stored
+                            if (!p.hasAttribute('data-original-html')) {
+                                newElement.setAttribute('data-original-html', p.outerHTML);
+                            } else {
+                                // Preserve the original HTML attribute
+                                newElement.setAttribute('data-original-html', p.getAttribute('data-original-html'));
+                            }
+                            // Keep original text for hover functionality
                             newElement.setAttribute('data-original-text', p.textContent);
                             p.parentNode.replaceChild(newElement, p);
                             
                             // Store reference to simplified elements
+                            simplifiedElements = simplifiedElements.filter(el => el !== p);
                             simplifiedElements.push(newElement);
 
                             // Add hover event listeners if enabled
@@ -574,7 +595,8 @@ let initializationPromise = null;
 // Track feature states
 let fontEnabled = false;
 let hoverEnabled = false;
-let simplifiedElements = [];
+let simplifiedElements = []; // Array to track simplified elements
+let isSimplifying = false; // Flag to track simplification in progress
 
 // Load feature states from storage when script loads
 chrome.storage.sync.get(['fontEnabled', 'hoverEnabled'], function(result) {
