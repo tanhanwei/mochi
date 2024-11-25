@@ -162,8 +162,50 @@ simplifyButton.addEventListener('click', function() {
     });
 });
 
+// Function to generate simplification buttons based on config
+function generateSimplificationButtons() {
+    const buttonRow = document.getElementById('simplificationButtonRow');
+    buttonRow.innerHTML = ''; // Clear existing buttons
+
+    const levels = simplificationLevelsConfig.levels;
+    let labels = [];
+    let dataLevels = [];
+
+    if (levels === 3) {
+        labels = ['Low', 'Mid', 'High'];
+        dataLevels = ['1', '3', '5'];
+    } else if (levels === 5) {
+        labels = ['Very Low', 'Low', 'Mid', 'High', 'Very High'];
+        dataLevels = ['1', '2', '3', '4', '5'];
+    } else {
+        console.error('Invalid number of simplification levels in config');
+        return;
+    }
+
+    labels.forEach((label, index) => {
+        const button = document.createElement('button');
+        button.classList.add('simplification-button');
+        button.setAttribute('data-level', dataLevels[index]);
+        button.textContent = label;
+
+        if (label === 'Mid') {
+            button.classList.add('selected');
+        }
+
+        button.addEventListener('click', function() {
+            document.querySelectorAll('.simplification-button')
+                .forEach(btn => btn.classList.remove('selected'));
+            this.classList.add('selected');
+            chrome.storage.sync.set({ simplificationLevel: this.getAttribute('data-level') });
+        });
+
+        buttonRow.appendChild(button);
+    });
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     hideAllPages();
+    generateSimplificationButtons();
     
     // Handle optimize for dropdown changes
     document.getElementById('optimizeSelector').addEventListener('change', function(e) {

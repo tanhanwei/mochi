@@ -111,7 +111,8 @@ button:hover {
 
 /* Ensure buttons in the row have equal width */
 .button-row .simplification-button {
-    flex-basis: calc(20% - 4px); /* 5 buttons, so 20% each minus some gap */
+    flex: 1;
+    margin: 0 2px;
 }
 
 /* Loader Animation */
