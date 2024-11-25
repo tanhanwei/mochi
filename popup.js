@@ -165,22 +165,26 @@ simplifyButton.addEventListener('click', function() {
 // Function to generate simplification buttons based on config
 function generateSimplificationButtons() {
     const buttonRow = document.getElementById('simplificationButtonRow');
-    buttonRow.innerHTML = ''; // Clear existing buttons
-
-    const levels = simplificationLevelsConfig.levels;
-    let labels = [];
-    let dataLevels = [];
-
-    if (levels === 3) {
-        labels = ['Low', 'Mid', 'High'];
-        dataLevels = ['1', '3', '5'];
-    } else if (levels === 5) {
-        labels = ['Very Low', 'Low', 'Mid', 'High', 'Very High'];
-        dataLevels = ['1', '2', '3', '4', '5'];
-    } else {
-        console.error('Invalid number of simplification levels in config');
+    if (!buttonRow) {
+        console.error('Simplification button row element not found');
         return;
     }
+    
+    buttonRow.innerHTML = ''; // Clear existing buttons
+
+    // Get configuration from config.js
+    if (typeof simplificationLevelsConfig === 'undefined') {
+        console.error('Configuration not loaded');
+        return;
+    }
+
+    const levels = simplificationLevelsConfig.levels;
+    const labels = levels === 3 ? 
+        ['Low', 'Mid', 'High'] : 
+        ['Very Low', 'Low', 'Mid', 'High', 'Very High'];
+    const dataLevels = levels === 3 ? 
+        ['1', '3', '5'] : 
+        ['1', '2', '3', '4', '5'];
 
     labels.forEach((label, index) => {
         const button = document.createElement('button');

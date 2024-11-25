@@ -21,7 +21,7 @@
   },
   "content_scripts": [{
     "matches": ["<all_urls>"],
-    "js": ["marked.js", "logger.js", "content.js"],
+    "js": ["config.js", "marked.js", "logger.js", "content.js"],
     "css": ["content.css"],
     "run_at": "document_start"
   }],

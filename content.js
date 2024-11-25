@@ -60,11 +60,20 @@ const themes = {
 // Initialize the AI capabilities
 async function getReadingLevel() {
     return new Promise((resolve) => {
-        chrome.storage.sync.get('readingLevel', function(result) {
-            let level = '3'; // Default to Level '3'
-            if (result.readingLevel) {
-                level = result.readingLevel.toString();
+        chrome.storage.sync.get(['readingLevel', 'simplificationLevel'], function(result) {
+            // First try to get the explicitly set simplification level
+            if (result.simplificationLevel) {
+                console.log('Using explicit simplification level:', result.simplificationLevel);
+                resolve(result.simplificationLevel.toString());
+                return;
             }
+            
+            // Fall back to reading level or default
+            let level = result.readingLevel ? 
+                result.readingLevel.toString() : 
+                (typeof simplificationLevelsConfig !== 'undefined' && 
+                 simplificationLevelsConfig.levels === 3 ? '3' : '3');
+                 
             console.log('Retrieved reading level:', level);
             resolve(level);
         });
