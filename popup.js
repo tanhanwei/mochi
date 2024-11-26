@@ -137,6 +137,63 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('mainContent').style.display = 'block';
     initializePopup();
 
+    // Reset to Defaults button handler
+    document.getElementById('resetDefaults').addEventListener('click', function() {
+        chrome.storage.sync.set({
+            fontEnabled: false,
+            selectedTheme: 'default',
+            lineSpacing: 1.5,
+            letterSpacing: 0,
+            wordSpacing: 0
+        }, function() {
+            // Update the UI elements
+            document.getElementById('fontToggle').checked = false;
+            document.getElementById('themeSelector').value = 'default';
+
+            document.getElementById('lineSpacing').value = 1.5;
+            document.getElementById('lineSpacingValue').textContent = '1.5';
+
+            document.getElementById('letterSpacing').value = 0;
+            document.getElementById('letterSpacingValue').textContent = '0px';
+
+            document.getElementById('wordSpacing').value = 0;
+            document.getElementById('wordSpacingValue').textContent = '0px';
+
+            // Apply defaults to the current tab
+            chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
+                if (tabs[0]) {
+                    // Reset font
+                    chrome.tabs.sendMessage(tabs[0].id, {
+                        action: 'toggleFont',
+                        enabled: false
+                    });
+
+                    // Reset theme
+                    chrome.tabs.sendMessage(tabs[0].id, {
+                        action: 'applyTheme',
+                        theme: 'default'
+                    });
+
+                    // Reset spacing
+                    chrome.tabs.sendMessage(tabs[0].id, {
+                        action: 'adjustSpacing',
+                        lineSpacing: 1.5,
+                        letterSpacing: 0,
+                        wordSpacing: 0
+                    });
+                }
+            });
+
+            // Show confirmation message
+            const statusMessage = document.createElement('div');
+            statusMessage.textContent = 'Settings have been reset to defaults.';
+            statusMessage.style.color = '#27ae60';
+            statusMessage.style.marginTop = '10px';
+            document.querySelector('.container').appendChild(statusMessage);
+            setTimeout(() => statusMessage.remove(), 3000);
+        });
+    });
+
     // Settings navigation
     const settingsButton = document.querySelector('.settings-button');
     const backButton = document.querySelector('.back-button');
