@@ -663,14 +663,10 @@ let simplifiedElements = []; // Array to track simplified elements
 let isSimplifying = false; // Flag to track simplification in progress
 
 // Load feature states from storage when script loads
-chrome.storage.sync.get(['fontEnabled', 'hoverEnabled'], function(result) {
+chrome.storage.sync.get(['fontEnabled'], function(result) {
     fontEnabled = result.fontEnabled || false;
-    hoverEnabled = result.hoverEnabled || false;
     if (fontEnabled) {
         toggleOpenDyslexicFont(true);
-    }
-    if (hoverEnabled) {
-        enableHoverFeature();
     }
 });
 

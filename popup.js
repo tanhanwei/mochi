@@ -1,6 +1,6 @@
 function initializePopup() {
-    // Restore selected simplification level
-    chrome.storage.sync.get(['simplificationLevel', 'optimizeFor'], function(result) {
+    // Restore selected simplification level and font settings
+    chrome.storage.sync.get(['simplificationLevel', 'optimizeFor', 'fontEnabled'], function(result) {
         const level = result.simplificationLevel || '3'; // Default to '3' for "Mid"
         const button = document.querySelector(`.simplification-button[data-level="${level}"]`);
         if (button) {
@@ -161,48 +161,6 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 
-    // Hover to show original toggle handler
-    const hoverToggle = document.getElementById('hoverToggle');
-    
-    // Request current hover state when popup opens
-    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-        if (tabs[0] && /^https?:/.test(tabs[0].url)) {
-            chrome.tabs.sendMessage(tabs[0].id, { action: 'getHoverState' }, function(response) {
-                if (chrome.runtime.lastError) {
-                    console.error("Could not get hover state:", chrome.runtime.lastError.message);
-                    hoverToggle.checked = false; // Default to unchecked
-                } else if (response && response.hoverEnabled !== undefined) {
-                    hoverToggle.checked = response.hoverEnabled;
-                }
-            });
-        } else {
-            console.warn("Active tab is not a valid web page. Cannot get hover state.");
-            hoverToggle.checked = false; // Default to unchecked
-        }
-    });
-
-    hoverToggle.addEventListener('change', function(e) {
-        const enabled = e.target.checked;
-        
-        // Save preference
-        chrome.storage.sync.set({ hoverEnabled: enabled });
-        
-        // Apply to current tab
-        chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-            if (tabs[0] && /^https?:/.test(tabs[0].url)) {
-                chrome.tabs.sendMessage(tabs[0].id, {
-                    action: 'toggleHover',
-                    enabled: enabled
-                }, function(response) {
-                    if (chrome.runtime.lastError) {
-                        console.error('Could not toggle hover:', chrome.runtime.lastError.message);
-                    }
-                });
-            } else {
-                console.warn("Active tab is not a valid web page. Cannot toggle hover.");
-            }
-        });
-    });
 
     // OpenDyslexic font toggle handler
     const fontToggle = document.getElementById('fontToggle');
