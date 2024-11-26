@@ -1,6 +1,6 @@
 body {
     width: 300px;
-    padding: 8px;
+    padding: 0;
     font-family: 'Inter', sans-serif;
     margin: 0;
 }
@@ -9,14 +9,15 @@ body {
     display: flex;
     flex-direction: column;
     gap: 8px;
+    padding: 16px;
 }
 
 header {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    margin-bottom: 8px;
-    padding: 4px;
+    margin-bottom: 16px;
+    padding: 4px 0;
 }
 
 h1 {
@@ -72,7 +73,7 @@ button {
 .section-title {
     display: flex;
     align-items: center;
-    margin: 16px 0 8px 0;
+    margin: 16px 0;
     font-size: 16px;
     color: #000000;
     font-weight: 600;
@@ -128,7 +129,7 @@ button:hover {
 #resetDefaults {
     width: 100%;
     padding: 8px;
-    margin-top: 12px;
+    margin-top: 24px;
     background-color: #f5f5f5;
     border: 1px solid #ddd;
     border-radius: 8px;
@@ -241,7 +242,7 @@ button:hover {
 
 /* Slider Styles */
 .slider-container {
-    margin-bottom: 8px;
+    margin-bottom: 16px;
 }
 
 .slider-container label {
@@ -281,7 +282,7 @@ input[type="range"]::-webkit-slider-thumb {
     align-items: center;
     justify-content: space-between;
     gap: 6px;
-    margin-top: 0;
+    margin: 12px 0;
     padding: 4px 0;
 }
 
@@ -343,7 +344,7 @@ input:checked + .slider:before {
 
 /* Dropdown Styles */
 .dropdown-container {
-    margin: 8px 0;
+    margin: 12px 0;
 }
 
 .dropdown-container select {
