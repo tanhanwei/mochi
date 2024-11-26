@@ -142,12 +142,6 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('optimizeSelector').addEventListener('change', function(e) {
         chrome.storage.sync.set({ optimizeFor: e.target.value });
     });
-
-    document.getElementById('continueBtn').addEventListener('click', function() {
-        hideAllPages();
-        document.getElementById('mainContent').style.display = 'block';
-        initializePopup();
-    });
 });
 
 
