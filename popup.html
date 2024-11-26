@@ -3,17 +3,27 @@
 <head>
     <title>MindMeld</title>
     <link rel="stylesheet" href="popup.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
     <div id="mainContent">
         <div class="container">
-            <h1>MindMeld</h1>
-            <div class="controls">
+            <header>
+                <h1>MindMeld</h1>
+                <button class="settings-button" aria-label="Settings">⚙️</button>
+            </header>
             <div class="simplification-level">
-                <h2>Simplification Level</h2>
+                <h2>
+                    <span class="text-icon">T</span>
+                    Simplification Level
+                    <button class="help-icon" aria-label="Help">?</button>
+                </h2>
                 <div class="button-row" id="simplificationButtonRow">
-                    <!-- Buttons will be generated dynamically -->
+                    <button class="simplification-button" data-level="1">Low</button>
+                    <button class="simplification-button selected" data-level="3">Mid</button>
+                    <button class="simplification-button" data-level="5">High</button>
                 </div>
+                <p class="helper-text">Choose how much to simplify the text content</p>
             </div>
             <div class="dropdown-container">
                 <label for="optimizeSelector">Optimize for:</label>
