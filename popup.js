@@ -138,6 +138,22 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('mainContent').style.display = 'block';
     initializePopup();
 
+    // Settings navigation
+    const settingsButton = document.querySelector('.settings-button');
+    const backButton = document.querySelector('.back-button');
+    const mainContent = document.getElementById('mainContent');
+    const settingsPage = document.getElementById('settingsPage');
+
+    settingsButton.addEventListener('click', function() {
+        mainContent.style.display = 'none';
+        settingsPage.style.display = 'block';
+    });
+
+    backButton.addEventListener('click', function() {
+        settingsPage.style.display = 'none';
+        mainContent.style.display = 'block';
+    });
+
     // Handle optimize for dropdown changes
     document.getElementById('optimizeSelector').addEventListener('change', function(e) {
         chrome.storage.sync.set({ optimizeFor: e.target.value });

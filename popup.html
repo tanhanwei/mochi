@@ -8,12 +8,11 @@
 </head>
 <body>
     <div id="mainContent">
-        <div id="mainContent">
-            <div class="container">
-                <header>
-                    <h1>MindMeld</h1>
-                    <button class="settings-button" aria-label="Settings">⚙️</button>
-                </header>
+        <div class="container">
+            <header>
+                <h1>MindMeld</h1>
+                <button class="settings-button" aria-label="Settings">⚙️</button>
+            </header>
             <div class="simplification-level">
                 <h2 class="section-title">
                     <span class="text-icon">T</span>
@@ -41,6 +40,16 @@
             </button>
             
             <!-- Spacing Controls -->
+        </div>
+            </div>
+        </div>
+    </div>
+    <div id="settingsPage" style="display: none;">
+        <div class="container">
+            <header>
+                <h1>Settings</h1>
+                <button class="back-button" aria-label="Back">←</button>
+            </header>
             <div class="slider-container">
                 <label for="lineSpacing">Line Spacing: <span id="lineSpacingValue">1.5</span></label>
                 <input type="range" id="lineSpacing" min="1" max="3" step="0.1" value="1.5">
@@ -82,60 +91,6 @@
                 <span class="toggle-label">Text-to-Speech</span>
                 <label class="toggle">
                     <input type="checkbox" id="ttsToggle">
-                    <span class="slider round"></span>
-                </label>
-            </div>
-        </div>
-            </div>
-        </div>
-    </div>
-    <div id="settingsPage" style="display: none;">
-        <div class="container">
-            <header>
-                <h1>Settings</h1>
-                <button class="back-button" aria-label="Back">←</button>
-            </header>
-            <div class="slider-container">
-                <label for="lineSpacing">Line Spacing <span id="lineSpacingValue">2x</span></label>
-                <input type="range" id="lineSpacing" min="1" max="3" step="0.1" value="2">
-            </div>
-            <div class="slider-container">
-                <label for="letterSpacing">Letter Spacing <span id="letterSpacingValue">1.5x</span></label>
-                <input type="range" id="letterSpacing" min="0" max="5" step="0.1" value="1.5">
-            </div>
-            <div class="slider-container">
-                <label for="wordSpacing">Word Spacing <span id="wordSpacingValue">4x</span></label>
-                <input type="range" id="wordSpacing" min="0" max="10" step="0.5" value="4">
-            </div>
-            <div class="slider-container">
-                <label for="fontSize">Font Size <span id="fontSizeValue">16px</span></label>
-                <input type="range" id="fontSize" min="12" max="24" step="1" value="16">
-            </div>
-            <div class="toggle-container">
-                <span class="toggle-label">OpenDyslexic Font</span>
-                <label class="toggle">
-                    <input type="checkbox" id="fontToggle">
-                    <span class="slider round"></span>
-                </label>
-            </div>
-            <div class="toggle-container">
-                <span class="toggle-label">High Contrast</span>
-                <label class="toggle">
-                    <input type="checkbox" id="contrastToggle">
-                    <span class="slider round"></span>
-                </label>
-            </div>
-            <div class="toggle-container">
-                <span class="toggle-label">Text-to-Speech</span>
-                <label class="toggle">
-                    <input type="checkbox" id="ttsToggle">
-                    <span class="slider round"></span>
-                </label>
-            </div>
-            <div class="toggle-container">
-                <span class="toggle-label">Hover to Show Original</span>
-                <label class="toggle">
-                    <input type="checkbox" id="hoverToggle">
                     <span class="slider round"></span>
                 </label>
             </div>
