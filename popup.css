@@ -1,6 +1,6 @@
 body {
     width: 300px;
-    padding: 10px;
+    padding: 8px;
     font-family: 'Inter', sans-serif;
     margin: 0;
 }
@@ -8,7 +8,7 @@ body {
 .container {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 8px;
 }
 
 header {
@@ -72,8 +72,8 @@ button {
 .section-title {
     display: flex;
     align-items: center;
-    margin: 24px 0 16px 0;
-    font-size: 18px;
+    margin: 16px 0 8px 0;
+    font-size: 16px;
     color: #000000;
     font-weight: 600;
 }
@@ -127,18 +127,18 @@ button:hover {
 
 #resetDefaults {
     width: 100%;
-    padding: 12px;
-    margin-top: 20px;
+    padding: 8px;
+    margin-top: 12px;
     background-color: #f5f5f5;
     border: 1px solid #ddd;
     border-radius: 8px;
     color: #333;
-    font-size: 16px;
+    font-size: 14px;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
+    gap: 6px;
 }
 
 #resetDefaults:hover {
@@ -241,7 +241,7 @@ button:hover {
 
 /* Slider Styles */
 .slider-container {
-    margin-bottom: 12px;
+    margin-bottom: 8px;
 }
 
 .slider-container label {
@@ -280,9 +280,9 @@ input[type="range"]::-webkit-slider-thumb {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 10px;
-    margin-top: 1px;
-    padding: 5px 0;
+    gap: 6px;
+    margin-top: 0;
+    padding: 4px 0;
 }
 
 .toggle {
@@ -343,7 +343,7 @@ input:checked + .slider:before {
 
 /* Dropdown Styles */
 .dropdown-container {
-    margin: 12px 0;
+    margin: 8px 0;
 }
 
 .dropdown-container select {
@@ -365,7 +365,13 @@ input:checked + .slider:before {
     display: block;
 }
 
-h2, label {
+h2 {
+    font-size: 16px;
+    margin: 0 0 8px 0;
+}
+
+label {
+    font-size: 14px;
     margin: 0;
     padding: 0;
 }
