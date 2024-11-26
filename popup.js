@@ -27,9 +27,8 @@ function initializePopup() {
         document.getElementById('wordSpacingValue').textContent = (result.wordSpacing || 0) + 'px';
     });
     
-    chrome.storage.sync.get(['fontEnabled', 'hoverEnabled'], function(result) {
+    chrome.storage.sync.get(['fontEnabled'], function(result) {
         document.getElementById('fontToggle').checked = result.fontEnabled || false;
-        document.getElementById('hoverToggle').checked = result.hoverEnabled || false;
     });
 }
 
