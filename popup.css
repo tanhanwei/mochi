@@ -1,6 +1,6 @@
 body {
     width: 300px;
-    padding: 15px;
+    padding: 10px;
     font-family: 'Inter', sans-serif;
     margin: 0;
 }
@@ -58,7 +58,7 @@ h1 {
 
 .helper-text {
     color: #666;
-    font-size: 14px;
+    font-size: 12px;
     margin: 8px 0 0 0;
 }
 
@@ -229,7 +229,7 @@ input[type="range"]::-webkit-slider-thumb {
     display: flex;
     align-items: center;
     gap: 10px;
-    margin-top: 10px;
+    margin-top: 1px;
     padding: 5px 0;
 }
 
