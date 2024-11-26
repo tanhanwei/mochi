@@ -830,33 +830,6 @@ function applyTheme(themeName) {
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
-    // Initialize settings navigation
-    const settingsButton = document.querySelector('.settings-button');
-    const backButton = document.querySelector('.back-button');
-    const mainContent = document.getElementById('mainContent');
-    const settingsPage = document.getElementById('settingsPage');
-
-    if (settingsButton && backButton && mainContent && settingsPage) {
-        settingsButton.addEventListener('click', function() {
-            console.log('Settings button clicked');
-            mainContent.style.display = 'none';
-            settingsPage.style.display = 'block';
-        });
-
-        backButton.addEventListener('click', function() {
-            console.log('Back button clicked');
-            settingsPage.style.display = 'none';
-            mainContent.style.display = 'block';
-        });
-    } else {
-        console.error('Navigation elements not found:', {
-            settingsButton,
-            backButton,
-            mainContent,
-            settingsPage
-        });
-    }
-
     ensureInitialized();
     
     // Apply saved theme

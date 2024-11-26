@@ -29,10 +29,14 @@ h1 {
 .back-button {
     background: none;
     border: none;
-    font-size: 20px;
     cursor: pointer;
     padding: 4px;
     color: #333;
+}
+
+.settings-button i,
+.back-button i {
+    font-size: 20px;
 }
 
 .settings-button:hover,
