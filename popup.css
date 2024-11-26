@@ -14,8 +14,9 @@ body {
 header {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
     margin-bottom: 8px;
+    padding: 4px;
 }
 
 h1 {
@@ -25,6 +26,17 @@ h1 {
     font-weight: 600;
 }
 
+/* Reset default button styles */
+button {
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    font: inherit;
+    color: inherit;
+    cursor: pointer;
+}
+
 .settings-button,
 .back-button {
     background: none;
@@ -32,6 +44,12 @@ h1 {
     cursor: pointer;
     padding: 4px;
     color: #333;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: auto;
+    min-width: auto;
+    margin: 0;
 }
 
 .settings-button i,
