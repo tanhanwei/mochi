@@ -72,10 +72,15 @@ button {
 .section-title {
     display: flex;
     align-items: center;
-    margin-bottom: 8px;
-    font-size: 16px;
-    color: #2c3e50;
+    margin: 24px 0 16px 0;
+    font-size: 18px;
+    color: #000000;
     font-weight: 600;
+}
+
+.section-title i {
+    margin-right: 8px;
+    font-size: 20px;
 }
 
 .help-icon {
@@ -102,14 +107,14 @@ button {
     padding: 10px;
     border: none;
     border-radius: 5px;
-    background-color: #3498db;
+    background-color: #000000;
     color: white;
     cursor: pointer;
     transition: background-color 0.3s;
 }
 
 button:hover {
-    background-color: #2980b9;
+    background-color: #333333;
 }
 
 #viewLogs {
@@ -316,7 +321,7 @@ input[type="range"]::-webkit-slider-thumb {
 }
 
 input:checked + .slider {
-    background-color: #3498db;
+    background-color: #000000;
 }
 
 input:checked + .slider:before {
@@ -338,7 +343,17 @@ input:checked + .slider:before {
 
 /* Dropdown Styles */
 .dropdown-container {
-    margin-bottom: 12px;
+    margin: 12px 0;
+}
+
+.dropdown-container select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #cccccc;
+    border-radius: 5px;
+    font-size: 14px;
+    color: #000000;
+    background-color: #ffffff;
 }
 
 .section-label {
