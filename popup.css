@@ -60,7 +60,15 @@ button {
 
 .settings-button:hover,
 .back-button:hover {
-    color: #3498db;
+    background-color: #000000;
+    color: #ffffff;
+    border-radius: 5px;
+    padding: 6px;
+}
+
+.settings-button,
+.back-button {
+    transition: background-color 0.3s, color 0.3s;
 }
 
 .text-icon {
@@ -209,8 +217,9 @@ button:hover {
 
 /* Selected state for simplification buttons */
 .simplification-button.selected {
-    background-color: #3498db;
-    color: white;
+    background-color: #14171A;
+    color: #ffffff;
+    border-color: #14171A;
 }
 
 /* Ensure buttons in the row have equal width */
