@@ -1,6 +1,6 @@
 body {
     width: 300px;
-    padding: 20px;
+    padding: 15px;
     font-family: 'Inter', sans-serif;
     margin: 0;
 }
@@ -8,7 +8,7 @@ body {
 .container {
     display: flex;
     flex-direction: column;
-    gap: 24px;
+    gap: 12px;
 }
 
 header {
@@ -36,16 +36,24 @@ h1 {
 .text-icon {
     font-weight: 600;
     margin-right: 8px;
+    font-size: 18px;
+    align-self: center;
+}
+
+.section-title {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+    font-size: 16px;
+    color: #2c3e50;
+    font-weight: 600;
 }
 
 .help-icon {
-    background: none;
-    border: none;
+    margin-left: auto;
+    font-size: 18px;
     color: #666;
-    font-size: 14px;
     cursor: pointer;
-    padding: 2px 8px;
-    border-radius: 50%;
 }
 
 .helper-text {
@@ -184,7 +192,7 @@ button:hover {
 
 /* Slider Styles */
 .slider-container {
-    margin-bottom: 20px;
+    margin-bottom: 12px;
 }
 
 .slider-container label {
@@ -283,7 +291,21 @@ input:checked + .slider:before {
 
 /* Dropdown Styles */
 .dropdown-container {
-    margin-top: 10px;
+    margin-bottom: 12px;
+}
+
+.section-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    color: #2c3e50;
+    margin-bottom: 4px;
+    display: block;
+}
+
+h2, label {
+    margin: 0;
+    padding: 0;
 }
 
 .dropdown-container label {
