@@ -1,8 +1,3 @@
-function hideAllPages() {
-    document.getElementById('welcomePage').style.display = 'none';
-    document.getElementById('mainContent').style.display = 'none';
-}
-
 function initializePopup() {
     // Restore selected simplification level
     chrome.storage.sync.get(['simplificationLevel', 'optimizeFor'], function(result) {
@@ -139,18 +134,9 @@ function generateSimplificationButtons() {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    hideAllPages();
     generateSimplificationButtons();
-    
-    // Show the welcome page on load
-    document.getElementById('welcomePage').style.display = 'block';
-
-    // Event listener for "Let's Begin" button
-    document.getElementById('letsBegin').addEventListener('click', function() {
-        hideAllPages();
-        document.getElementById('mainContent').style.display = 'block';
-        initializePopup();
-    });
+    document.getElementById('mainContent').style.display = 'block';
+    initializePopup();
 
     // Handle optimize for dropdown changes
     document.getElementById('optimizeSelector').addEventListener('change', function(e) {
