@@ -91,9 +91,24 @@ button:hover {
     background-color: #219a52;
 }
 
-#closeLogs {
-    background-color: #95a5a6;
-    margin-top: 10px;
+#resetDefaults {
+    width: 100%;
+    padding: 12px;
+    margin-top: 20px;
+    background-color: #f5f5f5;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    color: #333;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+#resetDefaults:hover {
+    background-color: #e5e5e5;
 }
 
 #closeLogs:hover {

@@ -67,24 +67,23 @@
                 </label>
                 <span class="toggle-label">Hover to Show Original</span>
             </div>
-            <!-- Theme Selector -->
-            <div class="dropdown-container">
-                <label for="themeSelector">Select Theme:</label>
-                <select id="themeSelector">
-                    <option value="default">Default</option>
-                    <option value="highContrast">High Contrast (White on Black)</option>
-                    <option value="highContrastAlt">High Contrast (Black on White)</option>
-                    <option value="darkMode">Dark Mode</option>
-                    <option value="sepia">Sepia</option>
-                    <option value="lowBlueLight">Low Blue Light</option>
-                    <option value="softPastelBlue">Soft Pastel (Blue)</option>
-                    <option value="softPastelGreen">Soft Pastel (Green)</option>
-                    <option value="creamPaper">Cream Paper</option>
-                    <option value="grayScale">Gray Scale</option>
-                    <option value="blueLightFilter">Blue Light Filter</option>
-                    <option value="highContrastYellowBlack">High Contrast (Yellow on Black)</option>
-                    <option value="highContrastBlackYellow">High Contrast (Black on Yellow)</option>
-                </select>
+            <div class="slider-container">
+                <label for="fontSize">Font Size <span id="fontSizeValue">16px</span></label>
+                <input type="range" id="fontSize" min="12" max="24" step="1" value="16">
+            </div>
+            <div class="toggle-container">
+                <span class="toggle-label">High Contrast</span>
+                <label class="toggle">
+                    <input type="checkbox" id="contrastToggle">
+                    <span class="slider round"></span>
+                </label>
+            </div>
+            <div class="toggle-container">
+                <span class="toggle-label">Text-to-Speech</span>
+                <label class="toggle">
+                    <input type="checkbox" id="ttsToggle">
+                    <span class="slider round"></span>
+                </label>
             </div>
         </div>
             </div>
