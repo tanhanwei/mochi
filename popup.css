@@ -73,7 +73,7 @@ button {
 .section-title {
     display: flex;
     align-items: center;
-    margin: 16px 0;
+    margin: 12px 0;
     font-size: 16px;
     color: #000000;
     font-weight: 600;
@@ -129,7 +129,7 @@ button:hover {
 #resetDefaults {
     width: 100%;
     padding: 8px;
-    margin-top: 24px;
+    margin-top: 16px;
     background-color: #f5f5f5;
     border: 1px solid #ddd;
     border-radius: 8px;
@@ -242,7 +242,7 @@ button:hover {
 
 /* Slider Styles */
 .slider-container {
-    margin-bottom: 16px;
+    margin-bottom: 8px;
 }
 
 .slider-container label {
@@ -282,7 +282,7 @@ input[type="range"]::-webkit-slider-thumb {
     align-items: center;
     justify-content: space-between;
     gap: 6px;
-    margin: 12px 0;
+    margin: 8px 0;
     padding: 4px 0;
 }
 
@@ -338,13 +338,14 @@ input:checked + .slider:before {
 }
 
 .toggle-label {
+    font-family: inherit;
     color: #2c3e50;
     font-size: 14px;
 }
 
 /* Dropdown Styles */
 .dropdown-container {
-    margin: 12px 0;
+    margin: 8px 0;
 }
 
 .dropdown-container select {
@@ -372,6 +373,7 @@ h2 {
 }
 
 label {
+    font-family: inherit;
     font-size: 14px;
     margin: 0;
     padding: 0;
