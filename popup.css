@@ -182,6 +182,40 @@ button:hover {
     100% { transform: rotate(360deg); }
 }
 
+/* Slider Styles */
+.slider-container {
+    margin-bottom: 20px;
+}
+
+.slider-container label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.slider-value {
+    color: #666;
+}
+
+input[type="range"] {
+    width: 100%;
+    height: 4px;
+    background: #e5e5e5;
+    border-radius: 2px;
+    appearance: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    background: #14171A;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
 /* Toggle Switch Styles */
 .toggle-container {
     display: flex;
