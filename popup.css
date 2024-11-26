@@ -25,12 +25,19 @@ h1 {
     font-weight: 600;
 }
 
-.settings-button {
+.settings-button,
+.back-button {
     background: none;
     border: none;
     font-size: 20px;
     cursor: pointer;
     padding: 4px;
+    color: #333;
+}
+
+.settings-button:hover,
+.back-button:hover {
+    color: #3498db;
 }
 
 .text-icon {
