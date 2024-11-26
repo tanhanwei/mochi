@@ -142,67 +142,19 @@ document.addEventListener('DOMContentLoaded', function() {
     hideAllPages();
     generateSimplificationButtons();
     
+    // Show the welcome page on load
+    document.getElementById('welcomePage').style.display = 'block';
+
+    // Event listener for "Let's Begin" button
+    document.getElementById('letsBegin').addEventListener('click', function() {
+        hideAllPages();
+        document.getElementById('mainContent').style.display = 'block';
+        initializePopup();
+    });
+
     // Handle optimize for dropdown changes
     document.getElementById('optimizeSelector').addEventListener('change', function(e) {
         chrome.storage.sync.set({ optimizeFor: e.target.value });
-    });
-    
-    chrome.storage.sync.get('readingLevel', function(result) {
-        if (result.readingLevel) {
-            document.getElementById('mainContent').style.display = 'block';
-            initializePopup();
-        } else {
-            document.getElementById('welcomePage').style.display = 'block';
-        }
-    });
-
-    // Simplification level buttons functionality
-    document.querySelectorAll('.simplification-button').forEach(button => {
-        button.addEventListener('click', function() {
-            // Remove 'selected' class from all buttons
-            document.querySelectorAll('.simplification-button').forEach(btn => btn.classList.remove('selected'));
-            // Add 'selected' class to the clicked button
-            this.classList.add('selected');
-            // Save the selected level to storage
-            const selectedLevel = this.getAttribute('data-level');
-            chrome.storage.sync.set({ simplificationLevel: selectedLevel });
-        });
-    });
-
-    document.getElementById('letsBegin').addEventListener('click', function() {
-        hideAllPages();
-        currentSetIndex = 0;
-        currentLevelIndex = 0;
-        userScores = [];
-        document.getElementById('guidePage').style.display = 'block';
-        showCurrentGuideText();
-    });
-
-    document.getElementById('comfortableBtn').addEventListener('click', function() {
-        userScores.push(currentLevelIndex + 1);
-        currentSetIndex++;
-        currentLevelIndex = 0;
-        if (currentSetIndex < guideSets.length) {
-            showCurrentGuideText();
-        } else {
-            calculateAverageScore();
-        }
-    });
-
-    document.getElementById('preferEasierBtn').addEventListener('click', function() {
-        currentLevelIndex++;
-        if (currentLevelIndex < 4) {
-            showCurrentGuideText();
-        } else {
-            userScores.push(currentLevelIndex + 1);
-            currentSetIndex++;
-            currentLevelIndex = 0;
-            if (currentSetIndex < guideSets.length) {
-                showCurrentGuideText();
-            } else {
-                calculateAverageScore();
-            }
-        }
     });
 
     document.getElementById('continueBtn').addEventListener('click', function() {
