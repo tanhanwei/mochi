@@ -220,9 +220,18 @@ document.addEventListener('DOMContentLoaded', function() {
         mainContent.style.display = 'block';
     });
 
-    // Handle optimize for dropdown changes
+    // Handle optimize for dropdown changes and help icon
     document.getElementById('optimizeSelector').addEventListener('change', function(e) {
         chrome.storage.sync.set({ optimizeFor: e.target.value });
+    });
+
+    const helpIconOptimize = document.querySelector('.help-icon-optimize');
+    const optimizeGuide = document.getElementById('optimizeGuide');
+    
+    helpIconOptimize.addEventListener('click', function() {
+        optimizeGuide.classList.toggle('expanded');
+        const expanded = optimizeGuide.classList.contains('expanded');
+        helpIconOptimize.setAttribute('aria-expanded', expanded.toString());
     });
 });
 

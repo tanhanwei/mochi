@@ -36,12 +36,23 @@
                 <p class="helper-text">Choose how much to simplify the text content</p>
             </div>
             <div class="dropdown-container">
-                <label for="optimizeSelector">Optimize for:</label>
+                <label for="optimizeSelector">
+                    Optimize for:
+                    <i class="fa-solid fa-circle-question help-icon-optimize" aria-expanded="false"></i>
+                </label>
                 <select id="optimizeSelector">
-                    <option value="general" selected>General Reading Support</option>
-                    <option value="focus">Focus/Attention Support</option>
-                    <option value="processing">Reading Processing Support</option>
+                    <option value="textClarity" selected>Text Clarity</option>
+                    <option value="focusStructure">Focus & Structure</option>
+                    <option value="wordPattern">Word & Pattern</option>
                 </select>
+        
+                <div id="optimizeGuide" class="optimize-guide">
+                    <ul>
+                        <li><strong>Text Clarity</strong> - Simplifies complex text and improves readability</li>
+                        <li><strong>Focus & Structure</strong> - Organizes with better visual breaks and highlights</li>
+                        <li><strong>Word & Pattern</strong> - Uses consistent layouts and clearer word spacing</li>
+                    </ul>
+                </div>
             </div>
             <button id="simplifyText">
                 <span id="simplifyButtonText">Simplify Text</span>

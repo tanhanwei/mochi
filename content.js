@@ -102,7 +102,7 @@ async function initAICapabilities() {
         // Retrieve the optimization mode from storage
         const optimizeFor = await new Promise((resolve) => {
             chrome.storage.sync.get(['optimizeFor'], (result) => {
-                const mode = result.optimizeFor || 'general';
+                const mode = result.optimizeFor || 'textClarity';
                 console.log('Optimization mode:', mode);
                 resolve(mode);
             });

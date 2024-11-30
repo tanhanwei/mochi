@@ -407,6 +407,52 @@ input:checked + .slider:before {
     background-color: #ffffff;
 }
 
+.optimize-guide {
+    margin: 8px 0;
+    font-size: 14px;
+    color: #333;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out;
+}
+
+.optimize-guide.expanded {
+    max-height: 200px;
+}
+
+.optimize-guide ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.optimize-guide li {
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+}
+
+.optimize-guide li strong {
+    width: 120px;
+    color: #000;
+}
+
+.optimize-guide li::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    background-color: #3498db;
+    border-radius: 50%;
+    margin-right: 8px;
+}
+
+.help-icon-optimize {
+    margin-left: 4px;
+    font-size: 14px;
+    color: #666;
+    cursor: pointer;
+}
+
 .section-label {
     font-family: 'Inter', sans-serif;
     font-size: 16px;
