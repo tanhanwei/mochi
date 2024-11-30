@@ -87,6 +87,46 @@ button {
     font-weight: 600;
 }
 
+/* Styles for the simplification guide */
+.simplification-guide {
+    margin: 8px 0;
+    font-size: 14px;
+    color: #333;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out;
+}
+
+.simplification-guide.expanded {
+    max-height: 200px;
+}
+
+.simplification-guide ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.simplification-guide li {
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+}
+
+.simplification-guide li strong {
+    width: 50px;
+    color: #000;
+}
+
+.simplification-guide li::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    background-color: #3498db;
+    border-radius: 50%;
+    margin-right: 8px;
+}
+
 .section-title i {
     margin-right: 8px;
     font-size: 20px;

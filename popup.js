@@ -137,6 +137,16 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('mainContent').style.display = 'block';
     initializePopup();
 
+    // Add help icon click handler
+    const helpIcon = document.querySelector('.help-icon');
+    const simplificationGuide = document.getElementById('simplificationGuide');
+    
+    helpIcon.addEventListener('click', function() {
+        simplificationGuide.classList.toggle('expanded');
+        const expanded = simplificationGuide.classList.contains('expanded');
+        helpIcon.setAttribute('aria-expanded', expanded.toString());
+    });
+
     // Reset to Defaults button handler
     document.getElementById('resetDefaults').addEventListener('click', function() {
         chrome.storage.sync.set({
