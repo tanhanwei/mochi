@@ -90,7 +90,7 @@ button {
 /* Styles for the simplification guide */
 .simplification-guide {
     margin: 8px 0;
-    font-size: 14px;
+    font-size: 12px;
     color: #333;
     max-height: 0;
     overflow: hidden;
@@ -122,7 +122,7 @@ button {
     content: '';
     width: 6px;
     height: 6px;
-    background-color: #3498db;
+    background-color: #999999;
     border-radius: 50%;
     margin-right: 8px;
 }
@@ -409,7 +409,7 @@ input:checked + .slider:before {
 
 .optimize-guide {
     margin: 8px 0;
-    font-size: 14px;
+    font-size: 12px;
     color: #333;
     max-height: 0;
     overflow: hidden;
