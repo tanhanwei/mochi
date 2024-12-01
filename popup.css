@@ -468,12 +468,6 @@ input:checked + .slider:before {
 }
 
 
-.help-icon-optimize {
-    margin-left: 4px;
-    font-size: 14px;
-    color: #666;
-    cursor: pointer;
-}
 
 .section-label {
     font-family: 'Inter', sans-serif;

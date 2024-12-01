@@ -225,7 +225,7 @@ document.addEventListener('DOMContentLoaded', function() {
         chrome.storage.sync.set({ optimizeFor: e.target.value });
     });
 
-    const helpIconOptimize = document.querySelector('.help-icon-optimize');
+    const helpIconOptimize = document.querySelector('.dropdown-container + .help-icon');
     const optimizeGuide = document.getElementById('optimizeGuide');
     
     helpIconOptimize.addEventListener('click', function() {
