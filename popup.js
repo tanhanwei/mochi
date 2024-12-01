@@ -10,8 +10,8 @@ function initializePopup() {
         
         // Restore optimize for selection
         document.getElementById('optimizeSelector').value = result.optimizeFor || 'general';
-        });
-    }
+    });
+}
 
     // Restore theme, toggle and slider states
     chrome.storage.sync.get(['selectedTheme'], function(result) {
@@ -231,11 +231,11 @@ document.addEventListener('DOMContentLoaded', function() {
     
     if (helpIconOptimize && optimizeGuide) {
         helpIconOptimize.addEventListener('click', function() {
-        optimizeGuide.classList.toggle('expanded');
-        const expanded = optimizeGuide.classList.contains('expanded');
-        helpIconOptimize.setAttribute('aria-expanded', expanded.toString());
-    });
-});
+            optimizeGuide.classList.toggle('expanded');
+            const expanded = optimizeGuide.classList.contains('expanded');
+            helpIconOptimize.setAttribute('aria-expanded', expanded.toString());
+        });
+    }
 
 
 
