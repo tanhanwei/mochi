@@ -10,6 +10,9 @@ function initializePopup() {
         
         // Restore optimize for selection
         document.getElementById('optimizeSelector').value = result.optimizeFor || 'general';
+        
+        // Restore font toggle state
+        document.getElementById('fontToggle').checked = result.fontEnabled || false;
     });
 }
 
