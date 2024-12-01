@@ -16,8 +16,8 @@ header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 16px;
-    padding: 4px 0;
+    margin-bottom: 8px;
+    padding: 0;
 }
 
 .title {
@@ -100,7 +100,7 @@ button {
 
 .simplification-level,
 .optimization-mode {
-    padding: 12px 0;
+    padding: 8px 0;
 }
 
 /* Styles for the simplification guide */
@@ -267,7 +267,7 @@ button:hover {
 .button-row {
     display: flex;
     gap: 8px;
-    margin: 0;
+    margin: 0 0 4px 0;
 }
 
 /* Selected state for simplification buttons */
@@ -409,7 +409,7 @@ input:checked + .slider:before {
 
 /* Dropdown Styles */
 .dropdown-container {
-    margin: 0;
+    margin: 0 0 8px 0;
 }
 
 .dropdown-container select {
