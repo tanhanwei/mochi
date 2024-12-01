@@ -438,9 +438,26 @@ input:checked + .slider:before {
 }
 
 .optimize-guide li {
-    margin-bottom: 6px;
     display: flex;
-    align-items: center;
+    align-items: flex-start;
+    margin-bottom: 6px;
+}
+
+.optimize-guide li i {
+    margin-right: 8px;
+    font-size: 16px;
+    color: #999999;
+}
+
+.optimize-guide li strong {
+    margin-right: 4px;
+    font-weight: 600;
+    color: #000;
+}
+
+.optimize-guide li span {
+    font-size: 12px;
+    color: #333;
 }
 
 .optimize-guide li strong {
@@ -448,14 +465,6 @@ input:checked + .slider:before {
     color: #000;
 }
 
-.optimize-guide li::before {
-    content: '';
-    width: 6px;
-    height: 6px;
-    background-color: #3498db;
-    border-radius: 50%;
-    margin-right: 8px;
-}
 
 .help-icon-optimize {
     margin-left: 4px;
