@@ -15,9 +15,20 @@ body {
 header {
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
+    align-items: center;
     margin-bottom: 16px;
     padding: 4px 0;
+}
+
+.title {
+    display: flex;
+    align-items: center;
+}
+
+.mochi-icon {
+    width: 24px;
+    height: 24px;
+    margin-right: 8px;
 }
 
 h1 {
