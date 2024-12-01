@@ -438,31 +438,33 @@ input:checked + .slider:before {
 }
 
 .optimize-guide li {
-    display: flex;
-    align-items: flex-start;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    column-gap: 8px;
     margin-bottom: 6px;
+    align-items: start;
 }
 
 .optimize-guide li i {
-    margin-right: 8px;
     font-size: 16px;
     color: #999999;
+    margin-top: 4px;
+}
+
+.optimize-guide li div {
+    display: flex;
+    flex-direction: column;
 }
 
 .optimize-guide li strong {
-    margin-right: 4px;
     font-weight: 600;
-    color: #000;
+    color: #000000;
 }
 
 .optimize-guide li span {
     font-size: 12px;
-    color: #333;
-}
-
-.optimize-guide li strong {
-    width: 120px;
-    color: #000;
+    color: #333333;
+    margin-top: 2px;
 }
 
 
