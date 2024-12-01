@@ -14,7 +14,7 @@ function initializePopup() {
         // Restore font toggle state
         document.getElementById('fontToggle').checked = result.fontEnabled || false;
     });
-}
+
 
     // Restore theme, toggle and slider states
     chrome.storage.sync.get(['selectedTheme'], function(result) {
@@ -401,3 +401,4 @@ document.addEventListener('DOMContentLoaded', function() {
             console.warn("Active tab is not a valid web page. Cannot apply theme.");
         }
     });
+  });

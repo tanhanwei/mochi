@@ -1,6 +1,6 @@
 body {
     width: 300px;
-    padding: 0;
+    padding: 0px;
     font-family: 'Inter', sans-serif;
     margin: 0;
 }
@@ -16,19 +16,18 @@ header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 8px;
-    padding: 0;
+    margin-bottom: 4px;
 }
 
 .title {
     display: flex;
     align-items: center;
+    gap: 8px;
 }
 
 .mochi-icon {
     width: 24px;
     height: 24px;
-    margin-right: 8px;
 }
 
 h1 {
@@ -38,114 +37,42 @@ h1 {
     font-weight: 600;
 }
 
-/* Reset default button styles */
-button {
+.settings-button {
+    width: auto; /* Override the 100% width from general button styles */
     background: none;
     border: none;
-    padding: 0;
-    margin: 0;
-    font: inherit;
-    color: inherit;
-    cursor: pointer;
-}
-
-.settings-button,
-.back-button {
-    background: none;
-    border: none;
+    font-size: 20px;
     cursor: pointer;
     padding: 4px;
-    color: #333;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: auto;
-    min-width: auto;
-    margin: 0;
+    color: #666;
+    transition: color 0.2s ease;
 }
 
-.settings-button i,
-.back-button i {
-    font-size: 20px;
-}
-
-.settings-button:hover,
-.back-button:hover {
-    background-color: #000000;
-    color: #ffffff;
-    border-radius: 5px;
-    padding: 6px;
-}
-
-.settings-button,
-.back-button {
-    transition: background-color 0.3s, color 0.3s;
+.settings-button:hover {
+    background: none; /* Override the hover background from general button styles */
+    color: #333; /* Darken the icon on hover instead of changing background */
 }
 
 .text-icon {
-    font-size: 18px;
+    font-weight: 600;
     margin-right: 8px;
-    color: #000000;
+    font-size: 18px;
     align-self: center;
 }
 
 .section-title {
     display: flex;
     align-items: center;
-    margin: 0 0 8px 0;
+    margin-bottom: 4px;
     font-size: 16px;
-    color: #000000;
+    color: #2c3e50;
     font-weight: 600;
 }
 
-.simplification-level,
-.optimization-mode {
-    padding: 8px 0;
-}
-
-/* Styles for the simplification guide */
-.simplification-guide {
-    margin: 8px 0;
-    font-size: 12px;
-    color: #333;
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.3s ease-out;
-}
-
-.simplification-guide.expanded {
-    max-height: 200px;
-}
-
-.simplification-guide ul {
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
-}
-
-.simplification-guide li {
-    margin-bottom: 6px;
-    display: flex;
-    align-items: center;
-}
-
-.simplification-guide li strong {
-    width: 50px;
-    color: #000;
-}
-
-.simplification-guide li::before {
-    content: '';
-    width: 6px;
-    height: 6px;
-    background-color: #999999;
-    border-radius: 50%;
-    margin-right: 8px;
-}
-
 .section-title i {
-    margin-right: 8px;
-    font-size: 20px;
+    margin-right: 12px; /* Increased from 8px */
+    font-size: 18px;
+    color: #2c3e50;
 }
 
 .help-icon {
@@ -158,87 +85,40 @@ button {
 .helper-text {
     color: #666;
     font-size: 12px;
-    margin: 8px 0 0 0;
+    margin: 4px 0 0 0;
 }
 
 .controls {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 8px;
 }
 
 button {
     width: 100%;
     padding: 10px;
     border: none;
-    border-radius: 5px;
-    background-color: #000000;
+    border-radius: 8px;
+    background-color: #3498db;
     color: white;
     cursor: pointer;
     transition: background-color 0.3s;
 }
 
 button:hover {
-    background-color: #333333;
-}
-
-#viewLogs {
-    background-color: #27ae60;
-}
-
-#viewLogs:hover {
-    background-color: #219a52;
-}
-
-#resetDefaults {
-    width: 100%;
-    padding: 8px;
-    margin-top: 16px;
-    background-color: #f5f5f5;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    color: #333;
-    font-size: 14px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-}
-
-#resetDefaults:hover {
-    background-color: #e5e5e5;
-}
-
-#closeLogs:hover {
-    background-color: #7f8c8d;
-}
-
-#downloadLogs {
-    background-color: #3498db;
-    margin-top: 10px;
-}
-
-#downloadLogs:hover {
     background-color: #2980b9;
 }
 
 /* Styles for the Simplification Level section */
 .simplification-level {
-    text-align: center;
-    margin-bottom: 15px;
-}
-
-.simplification-level h2 {
-    font-size: 18px;
-    color: #2c3e50;
+    margin-bottom: 8px;
 }
 
 .button-row {
     display: flex;
     justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 5px;
+    gap: 8px;
+    margin-top: 8px;
 }
 
 .simplification-button {
@@ -264,25 +144,6 @@ button:hover {
     border-color: #14171A;
 }
 
-.button-row {
-    display: flex;
-    gap: 8px;
-    margin: 0 0 4px 0;
-}
-
-/* Selected state for simplification buttons */
-.simplification-button.selected {
-    background-color: #14171A;
-    color: #ffffff;
-    border-color: #14171A;
-}
-
-/* Ensure buttons in the row have equal width */
-.button-row .simplification-button {
-    flex: 1;
-    margin: 0 2px;
-}
-
 /* Loader Animation */
 .loader {
     border: 2px solid #f3f3f3;
@@ -304,40 +165,46 @@ button:hover {
     100% { transform: rotate(360deg); }
 }
 
-/* Slider Styles */
-.slider-container {
+/* Dropdown Styles */
+.dropdown-container {
     margin-bottom: 8px;
 }
 
-.slider-container label {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 8px;
-    font-size: 16px;
-    color: #333;
-}
-
-.slider-value {
-    color: #666;
-}
-
-input[type="range"] {
+select {
     width: 100%;
-    height: 4px;
-    background: #e5e5e5;
-    border-radius: 2px;
-    appearance: none;
-    margin: 10px 0;
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px solid #e5e5e5;
+    font-size: 14px;
+    background-color: white;
+    cursor: pointer;
 }
 
-input[type="range"]::-webkit-slider-thumb {
-    appearance: none;
-    width: 16px;
-    height: 16px;
-    background: #14171A;
-    border-radius: 50%;
+/* Settings Page Styles */
+#simplifyText {
+    background-color: #000000;
+    margin-top: 4px;
+}
+
+#simplifyText:hover {
+    background-color: #333333;
+}
+
+
+.back-button {
+    width: auto; /* Same override for back button */
+    background: none;
+    border: none;
+    font-size: 20px;
     cursor: pointer;
+    padding: 4px;
+    color: #666;
+    transition: color 0.2s ease;
+}
+
+.back-button:hover {
+    background: none;
+    color: #333;
 }
 
 /* Toggle Switch Styles */
@@ -345,9 +212,7 @@ input[type="range"]::-webkit-slider-thumb {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 6px;
-    margin: 8px 0;
-    padding: 4px 0;
+    margin-bottom: 8px;
 }
 
 .toggle {
@@ -372,6 +237,7 @@ input[type="range"]::-webkit-slider-thumb {
     bottom: 0;
     background-color: #ccc;
     transition: .4s;
+    border-radius: 24px;
 }
 
 .slider:before {
@@ -383,76 +249,101 @@ input[type="range"]::-webkit-slider-thumb {
     bottom: 4px;
     background-color: white;
     transition: .4s;
+    border-radius: 50%;
 }
 
 input:checked + .slider {
-    background-color: #000000;
+    background-color: #3498db;
 }
 
 input:checked + .slider:before {
     transform: translateX(26px);
 }
 
-.slider.round {
-    border-radius: 24px;
-}
-
-.slider.round:before {
-    border-radius: 50%;
-}
-
 .toggle-label {
-    font-family: inherit;
     color: #2c3e50;
     font-size: 14px;
 }
 
-/* Dropdown Styles */
-.dropdown-container {
-    margin: 0 0 8px 0;
+/* Slider Styles */
+.slider-container {
+    margin-bottom: 8px;
 }
 
-.dropdown-container select {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid #cccccc;
-    border-radius: 5px;
+.slider-container label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
     font-size: 14px;
-    color: #000000;
-    background-color: #ffffff;
+    color: #2c3e50;
 }
 
+.slider-value {
+    color: #666;
+}
+
+input[type="range"] {
+    width: 100%;
+    height: 4px;
+    background: #e5e5e5;
+    border-radius: 2px;
+    appearance: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    background: #14171A;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+/* Helper guide styles */
+.simplification-guide, 
 .optimize-guide {
-    margin: 8px 0;
-    font-size: 12px;
-    color: #333;
-    max-height: 0;
+    position: relative;
+    visibility: hidden;
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 0;
+    margin-top: 0;
+    opacity: 0;
+    height: 0;
     overflow: hidden;
-    transition: max-height 0.3s ease-out;
+    transition: all 0.5s ease-in-out;
+    transform: translateY(-8px);
 }
 
+.simplification-guide.expanded,
 .optimize-guide.expanded {
-    max-height: 200px;
+    visibility: visible;
+    opacity: 1;
+    height: auto;
+    padding: 12px;
+    margin-top: 8px;
+    transform: translateY(0);
 }
 
+.simplification-guide ul,
 .optimize-guide ul {
-    list-style-type: none;
+    list-style: none;
     padding: 0;
     margin: 0;
 }
 
+.simplification-guide li,
 .optimize-guide li {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    column-gap: 8px;
-    margin-bottom: 6px;
-    align-items: start;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
 }
 
 .optimize-guide li i {
-    font-size: 16px;
-    color: #999999;
-    margin-top: 4px;
+    color: #000000;
+    margin-top: 2px;
 }
 
 .optimize-guide li div {
@@ -460,52 +351,11 @@ input:checked + .slider:before {
     flex-direction: column;
 }
 
-.optimize-guide li strong {
-    font-weight: 600;
-    color: #000000;
-}
-
-.optimize-guide li span {
-    font-size: 12px;
-    color: #333333;
-    margin-top: 2px;
-}
-
-
-
-.section-label {
-    font-family: 'Inter', sans-serif;
-    font-size: 16px;
-    font-weight: 500;
+#resetDefaults {
+    background-color: #e5e5e5;
     color: #2c3e50;
-    margin-bottom: 4px;
-    display: block;
 }
 
-h2 {
-    font-size: 16px;
-    margin: 0 0 8px 0;
-}
-
-label {
-    font-family: inherit;
-    font-size: 14px;
-    margin: 0;
-    padding: 0;
-}
-
-.dropdown-container label {
-    display: block;
-    margin-bottom: 5px;
-    color: #2c3e50;
-    font-size: 14px;
-}
-
-#optimizeSelector,
-#themeSelector {
-    width: 100%;
-    padding: 8px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    font-size: 14px;
+#resetDefaults:hover {
+    background-color: #d5d5d5;
 }
